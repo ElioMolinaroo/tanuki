@@ -2,9 +2,10 @@
 
 {% block title %}{{ section.title }}{% endblock %}
 
-{% block sidebar %}
 {% set mode = config.extra.mode | default(value="site") %}
-{% if mode == "docs" or mode == "book" %}
+
+{% block sidebar %}
+{% if mode == "docs" %}
 {% include "partials/sidebar.html" %}
 {% endif %}
 {% endblock %}
@@ -24,9 +25,7 @@
     </div>
     {% endif %}
 
-    {% set mode = config.extra.mode | default(value="site") %}
-
-    {% if mode == "site" %}
+    {% if mode == "site" or mode == "blog" %}
     {# Blog/Site mode - show posts as cards #}
     {% if section.pages %}
     <div class="card-grid">
@@ -59,7 +58,7 @@
     {% endif %}
     {% endif %}
 
-    {% else %}
+    {% elif mode == "docs" or mode == "book" %}
     {# Docs/Book mode - show page list #}
     {% if section.pages %}
     <ul class="page-list">

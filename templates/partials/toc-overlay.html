@@ -12,7 +12,7 @@
             </button>
         </div>
         <nav class="toc-overlay__nav" aria-label="Book chapters">
-            {% set book_section = get_section(path="book/_index.md", metadata_only=true) %}
+            {% set book_section = get_section(path="_index.md", metadata_only=true) %}
             {% if book_section %}
             <ul class="toc-overlay__list">
                 <li class="toc-overlay__item">
@@ -20,7 +20,7 @@
                         {{ book_section.title }}
                     </a>
                 </li>
-                {% set book_pages = get_section(path="book/_index.md") %}
+                {% set book_pages = get_section(path="_index.md") %}
                 {% for page in book_pages.pages %}
                 <li class="toc-overlay__item">
                     <a href="{{ page.permalink | safe }}" class="toc-overlay__link{% if current_path is defined and current_path == page.path %} toc-overlay__link--active{% endif %}">

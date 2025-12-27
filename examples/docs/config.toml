@@ -1,0 +1,17 @@
+# Tanuki Theme - Documentation Mode Example
+base_url = "/tanuki/docs"
+title = "Tanuki Docs"
+description = "Documentation example for the Tanuki theme"
+theme = "tanuki"
+compile_sass = true
+build_search_index = true
+generate_feeds = false
+
+[markdown]
+highlight_code = true
+highlight_theme = "base16-ocean-dark"
+
+[extra]
+mode = "docs"
+github = "https://github.com/raskell-io/tanuki"
+show_theme_toggle = true

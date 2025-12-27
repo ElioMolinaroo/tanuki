@@ -21,13 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Zola
-        uses: taiki-e/install-action@v2
-        with:
-          tool: zola@0.19.2
+      - name: Install mise
+        uses: jdx/mise-action@v2
 
-      - name: Build site
-        run: zola build
+      - name: Build all examples
+        run: mise run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

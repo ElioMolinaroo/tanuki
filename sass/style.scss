@@ -19,3 +19,6 @@
 @import "components/search";
 @import "components/landing";
 @import "components/print";
+
+// Mode-specific styles
+@import "modes/blog";

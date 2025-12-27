@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
+    <title>Tanuki Theme Examples</title>
+    <style>
+        :root {
+            --ctp-mocha-base: #1e1e2e;
+            --ctp-mocha-mantle: #181825;
+            --ctp-mocha-crust: #11111b;
+            --ctp-mocha-text: #cdd6f4;
+            --ctp-mocha-subtext1: #bac2de;
+            --ctp-mocha-subtext0: #a6adc8;
+            --ctp-mocha-overlay2: #9399b2;
+            --ctp-mocha-overlay1: #7f849c;
+            --ctp-mocha-overlay0: #6c7086;
+            --ctp-mocha-surface2: #585b70;
+            --ctp-mocha-surface1: #45475a;
+            --ctp-mocha-surface0: #313244;
+            --ctp-mocha-mauve: #cba6f7;
+            --ctp-mocha-pink: #f5c2e7;
+            --ctp-mocha-teal: #94e2d5;
+            --ctp-mocha-green: #a6e3a1;
+            --ctp-mocha-peach: #fab387;
+            --ctp-mocha-blue: #89b4fa;
+
+            --ctp-latte-base: #eff1f5;
+            --ctp-latte-mantle: #e6e9ef;
+            --ctp-latte-crust: #dce0e8;
+            --ctp-latte-text: #4c4f69;
+            --ctp-latte-subtext1: #5c5f77;
+            --ctp-latte-subtext0: #6c6f85;
+            --ctp-latte-overlay2: #7c7f93;
+            --ctp-latte-mauve: #8839ef;
+            --ctp-latte-pink: #ea76cb;
+            --ctp-latte-teal: #179299;
+            --ctp-latte-green: #40a02b;
+            --ctp-latte-peach: #fe640b;
+            --ctp-latte-blue: #1e66f5;
+        }
+
+        [data-theme="dark"] {
+            --bg: var(--ctp-mocha-base);
+            --bg-alt: var(--ctp-mocha-mantle);
+            --text: var(--ctp-mocha-text);
+            --text-muted: var(--ctp-mocha-subtext0);
+            --border: var(--ctp-mocha-surface0);
+            --accent: var(--ctp-mocha-mauve);
+            --accent-hover: var(--ctp-mocha-pink);
+            --card-bg: var(--ctp-mocha-surface0);
+            --card-hover: var(--ctp-mocha-surface1);
+        }
+
+        [data-theme="light"] {
+            --bg: var(--ctp-latte-base);
+            --bg-alt: var(--ctp-latte-mantle);
+            --text: var(--ctp-latte-text);
+            --text-muted: var(--ctp-latte-subtext0);
+            --border: var(--ctp-latte-crust);
+            --accent: var(--ctp-latte-mauve);
+            --accent-hover: var(--ctp-latte-pink);
+            --card-bg: var(--ctp-latte-mantle);
+            --card-hover: var(--ctp-latte-crust);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: 'Geist';
+            src: url('./docs/fonts/Geist-Variable.woff2') format('woff2');
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Geist Mono';
+            src: url('./docs/fonts/GeistMono-Variable.woff2') format('woff2');
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        body {
+            font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+            margin-bottom: 3rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+        }
+
+        .card:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .card__icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card__title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card__description {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .footer {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: var(--card-hover);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        [data-theme="dark"] .theme-toggle .sun { display: block; }
+        [data-theme="dark"] .theme-toggle .moon { display: none; }
+        [data-theme="light"] .theme-toggle .sun { display: none; }
+        [data-theme="light"] .theme-toggle .moon { display: block; }
+    </style>
+    <script>
+        (function() {
+            try {
+                var stored = localStorage.getItem('tanuki-theme') || 'auto';
+                var theme = stored === 'auto'
+                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : stored;
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch(e) {}
+        })();
+    </script>
+</head>
+<body>
+    <button class="theme-toggle" aria-label="Toggle theme" onclick="toggleTheme()">
+        <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2"/>
+            <path d="M12 20v2"/>
+            <path d="m4.93 4.93 1.41 1.41"/>
+            <path d="m17.66 17.66 1.41 1.41"/>
+            <path d="M2 12h2"/>
+            <path d="M20 12h2"/>
+            <path d="m6.34 17.66-1.41 1.41"/>
+            <path d="m19.07 4.93-1.41 1.41"/>
+        </svg>
+        <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+        </svg>
+    </button>
+
+    <div class="container">
+        <div class="logo">tanuki</div>
+        <h1>Tanuki Theme</h1>
+        <p class="subtitle">A whimsical Zola theme with three distinct modes</p>
+
+        <div class="cards">
+            <a href="docs/" class="card">
+                <div class="card__icon">book</div>
+                <div class="card__title">Documentation</div>
+                <div class="card__description">
+                    Fixed sidebar navigation, collapsible ToC, and search. Perfect for technical docs.
+                </div>
+            </a>
+
+            <a href="book/" class="card">
+                <div class="card__icon">pages</div>
+                <div class="card__title">E-Book</div>
+                <div class="card__description">
+                    Clean reading experience with overlay ToC and chapter navigation. Ideal for long-form content.
+                </div>
+            </a>
+
+            <a href="blog/" class="card">
+                <div class="card__icon">writing</div>
+                <div class="card__title">Blog</div>
+                <div class="card__description">
+                    Card-based layout with tags, dates, and reading time. Great for articles and posts.
+                </div>
+            </a>
+        </div>
+
+        <footer class="footer">
+            <p>Built with <a href="https://www.getzola.org/" target="_blank" rel="noopener">Zola</a> and <a href="https://catppuccin.com/" target="_blank" rel="noopener">Catppuccin</a></p>
+            <p><a href="https://github.com/raskell-io/tanuki" target="_blank" rel="noopener">View on GitHub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('tanuki-theme', next);
+        }
+    </script>
+</body>
+</html>

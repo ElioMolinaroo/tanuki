@@ -1,5 +1,5 @@
 // =============================================================================
-// Search - Raskell Theme
+// Search - Tanuki Theme
 // Elasticlunr-powered search with keyboard navigation
 // =============================================================================
 
@@ -13,25 +13,22 @@
   let selectedIndex = -1;
 
   // Initialize search
-  async function initSearch() {
+  function initSearch() {
     searchOverlay = document.querySelector('.search-overlay');
     searchInput = document.querySelector('.search__input');
     searchResults = document.querySelector('.search__results');
 
     if (!searchOverlay || !searchInput) return;
 
-    // Load search index
-    try {
-      const response = await fetch('/search_index.en.json');
-      const data = await response.json();
-      searchIndex = elasticlunr.Index.load(data);
-    } catch (err) {
-      console.warn('Could not load search index:', err);
-      return;
-    }
-
-    // Set up event listeners
+    // Set up event listeners first (so UI always works)
     setupListeners();
+
+    // Load search index from window.searchIndex (set by search_index.en.js)
+    if (typeof window.searchIndex !== 'undefined' && typeof elasticlunr !== 'undefined') {
+      searchIndex = elasticlunr.Index.load(window.searchIndex);
+    } else {
+      console.warn('Search index or elasticlunr not available');
+    }
   }
 
   function setupListeners() {

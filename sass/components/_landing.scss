@@ -2,6 +2,172 @@
 // Landing Page Styles
 // =============================================================================
 
+// Personal/Blog Homepage Hero
+.hero {
+  text-align: center;
+  padding: 4rem 1rem 3rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero__avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+  border: 3px solid var(--ctp-surface1);
+}
+
+.hero__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--ctp-text);
+  margin-bottom: 0.75rem;
+}
+
+.hero__subtitle {
+  font-size: 1.25rem;
+  color: var(--ctp-subtext0);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+// Sections
+.section {
+  padding: 3rem 1rem;
+}
+
+.section--alt {
+  background: var(--ctp-mantle);
+}
+
+.section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section__link {
+  color: var(--ctp-mauve);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9375rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Card Grid
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  padding: 1.5rem;
+  background: var(--ctp-surface0);
+  border-radius: 12px;
+  border: 1px solid var(--ctp-surface1);
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--ctp-mauve);
+    transform: translateY(-2px);
+  }
+}
+
+.card__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+
+  a {
+    color: var(--ctp-text);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--ctp-mauve);
+    }
+  }
+}
+
+.card__description {
+  color: var(--ctp-subtext0);
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  font-size: 0.9375rem;
+}
+
+.card__meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.8125rem;
+  color: var(--ctp-subtext1);
+
+  time {
+    color: var(--ctp-subtext0);
+  }
+}
+
+.card__tags {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.tag--small {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+}
+
+// About Preview
+.about-preview {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.about-preview__content {
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ctp-text);
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: var(--ctp-subtext0);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 1.0625rem;
+  }
+}
+
+// Theme Landing Hero (for Tanuki landing page)
 .hero--landing {
   min-height: 60vh;
   display: flex;

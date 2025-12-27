@@ -79,7 +79,7 @@
     {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
-    {# Determine layout mode #}
+    {# Get mode from config #}
     {% set mode = config.extra.mode | default(value="site") %}
 
     {# Determine if header should be fixed (default: only for docs mode) #}
@@ -90,7 +90,7 @@
     {% endif %}
 
     {# Layout wrapper #}
-    <div class="layout layout--{{ mode }}{% if fixed_header %} layout--fixed-header{% endif %}">
+    <div class="layout layout--{{ mode }}{% if fixed_header %} layout--fixed-header{% endif %}" data-mode="{{ mode }}">
         {% block sidebar %}{% endblock %}
 
         <div class="layout__main">
@@ -119,7 +119,7 @@
     {% endif %}
 
     {# ToC overlay for book mode #}
-    {% if mode == "book" and config.extra.book.show_toc | default(value=true) %}
+    {% if mode == "book" %}
     {% include "partials/toc-overlay.html" %}
     {% endif %}
 
@@ -136,6 +136,8 @@
     <script src="{{ get_url(path='js/code.js') | safe }}" defer></script>
 
     {% if config.build_search_index %}
+    <script src="{{ get_url(path='elasticlunr.min.js') | safe }}"></script>
+    <script src="{{ get_url(path='search_index.en.js') | safe }}"></script>
     <script src="{{ get_url(path='js/search.js') | safe }}" defer></script>
     {% endif %}
 

@@ -1,7 +1,7 @@
-{# Sidebar with Table of Contents #}
-<aside class="sidebar" aria-label="Table of contents">
+{# Sidebar with Table of Contents for Docs Mode #}
+<aside id="sidebar" class="sidebar" aria-label="Table of contents">
     <div class="sidebar__header">
-        <span class="sidebar__title">Contents</span>
+        <span class="sidebar__title">Documentation</span>
         <button class="sidebar__close" aria-label="Close sidebar">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M18 6 6 18"/>
@@ -12,45 +12,32 @@
 
     <nav class="sidebar__content">
         <div class="toc">
-            {% if section %}
-            {# Docs/Book mode - show section pages #}
-            {% set pages = section.pages %}
-            {% if pages %}
+            {# Get the root section for docs #}
+            {% set root_section = get_section(path="_index.md") %}
+
+            {% if root_section %}
             <div class="toc__section">
                 <ul class="toc__list">
-                    {% for pg in pages %}
+                    {% for pg in root_section.pages %}
                     <li class="toc__item">
-                        <a href="{{ pg.permalink | safe }}" class="toc__link {% if current_path == pg.path %}active{% endif %}">
+                        <a href="{{ pg.permalink | safe }}" class="toc__link {% if current_path is defined and current_path == pg.path %}active{% endif %}">
                             {{ pg.title }}
                         </a>
-                        {# Sub-sections #}
-                        {% if pg.toc %}
-                        <ul class="toc__list toc__list--nested">
-                            {% for item in pg.toc %}
-                            <li class="toc__item">
-                                <a href="{{ pg.permalink | safe }}#{{ item.id }}" class="toc__link">
-                                    {{ item.title }}
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
                     </li>
                     {% endfor %}
                 </ul>
             </div>
-            {% endif %}
 
             {# Subsections #}
-            {% if section.subsections %}
-            {% for subsection_path in section.subsections %}
+            {% if root_section.subsections %}
+            {% for subsection_path in root_section.subsections %}
             {% set subsection = get_section(path=subsection_path) %}
             <div class="toc__section">
                 <div class="toc__section-title">{{ subsection.title }}</div>
                 <ul class="toc__list">
                     {% for pg in subsection.pages %}
                     <li class="toc__item">
-                        <a href="{{ pg.permalink | safe }}" class="toc__link {% if current_path == pg.path %}active{% endif %}">
+                        <a href="{{ pg.permalink | safe }}" class="toc__link {% if current_path is defined and current_path == pg.path %}active{% endif %}">
                             {{ pg.title }}
                         </a>
                     </li>
@@ -59,10 +46,10 @@
             </div>
             {% endfor %}
             {% endif %}
+            {% endif %}
 
-            {% elif page %}
-            {# Single page - show table of contents #}
-            {% if page.toc %}
+            {# On this page - headings from current page #}
+            {% if page and page.toc %}
             <div class="toc__section">
                 <div class="toc__section-title">On this page</div>
                 <ul class="toc__list">
@@ -87,11 +74,9 @@
                 </ul>
             </div>
             {% endif %}
-            {% endif %}
         </div>
     </nav>
 
-    {% if config.extra.mode == "docs" or config.extra.mode == "book" %}
     <div class="sidebar__footer">
         <a href="{{ get_url(path='print.html') | safe }}" class="print-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -102,14 +87,4 @@
             Print all pages
         </a>
     </div>
-    {% endif %}
 </aside>
-
-{# Mobile toggle button #}
-<button class="sidebar-toggle" aria-label="Toggle table of contents" aria-expanded="false">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 9h18"/>
-        <path d="M3 15h18"/>
-        <path d="m9 9-3 3 3 3"/>
-    </svg>
-</button>

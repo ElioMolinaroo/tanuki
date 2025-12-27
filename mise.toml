@@ -1,0 +1,104 @@
+[tools]
+zola = "0.19.2"
+
+# Sentinel is built from the local repo since the crates.io version is outdated
+# Install with: cargo install --path ../sentinel/crates/proxy
+
+[tasks.build]
+description = "Build all example sites"
+run = """
+#!/usr/bin/env bash
+set -e
+
+echo "Building example sites..."
+
+# Clean and create output directory with /tanuki/ prefix for GitHub Pages
+rm -rf public
+mkdir -p public/tanuki
+
+# Build docs example
+echo "Building docs example..."
+cd examples/docs
+zola build --output-dir ../../public/tanuki/docs
+cd ../..
+
+# Build book example
+echo "Building book example..."
+cd examples/book
+zola build --output-dir ../../public/tanuki/book
+cd ../..
+
+# Build blog example
+echo "Building blog example..."
+cd examples/blog
+zola build --output-dir ../../public/tanuki/blog
+cd ../..
+
+# Copy the combined index.html to both locations
+echo "Copying index.html..."
+cp examples/index.html public/tanuki/index.html
+# Also create a redirect at root for GitHub Pages
+cat > public/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="refresh" content="0; url=tanuki/">
+    <link rel="canonical" href="tanuki/">
+</head>
+<body>
+    <p>Redirecting to <a href="tanuki/">Tanuki Theme Examples</a>...</p>
+</body>
+</html>
+EOF
+
+echo "Build complete! Output in public/"
+echo "Serve with: python3 -m http.server 8080 -d public"
+echo "Then visit: http://127.0.0.1:8080/tanuki/"
+"""
+
+[tasks.serve]
+description = "Serve a specific example (usage: mise run serve docs|book|blog)"
+run = """
+#!/usr/bin/env bash
+set -e
+
+MODE="${1:-docs}"
+PORT="${2:-1111}"
+
+if [[ ! -d "examples/$MODE" ]]; then
+    echo "Error: Unknown mode '$MODE'. Use: docs, book, or blog"
+    exit 1
+fi
+
+echo "Serving $MODE example on http://127.0.0.1:$PORT"
+cd "examples/$MODE"
+zola serve --port "$PORT"
+"""
+
+[tasks."serve:docs"]
+description = "Serve the docs example on port 1111"
+run = "cd examples/docs && zola serve --port 1111"
+
+[tasks."serve:book"]
+description = "Serve the book example on port 1112"
+run = "cd examples/book && zola serve --port 1112"
+
+[tasks."serve:blog"]
+description = "Serve the blog example on port 1113"
+run = "cd examples/blog && zola serve --port 1113"
+
+[tasks.clean]
+description = "Clean build artifacts"
+run = "rm -rf public"
+
+[tasks."serve:all"]
+description = "Serve all built examples"
+depends = ["build"]
+run = """
+#!/usr/bin/env bash
+echo "Starting server on http://127.0.0.1:8080/tanuki/"
+echo "Press Ctrl+C to stop"
+# TODO: Use Sentinel once static file serving is ready
+# sentinel -c sentinel.kdl
+python3 -m http.server 8080 -d public
+"""

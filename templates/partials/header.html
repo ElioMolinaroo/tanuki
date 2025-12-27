@@ -1,9 +1,10 @@
 {# Header / Navigation #}
 {% set mode = config.extra.mode | default(value="site") %}
+
 <header class="header">
     <div class="header__left">
         {# Sidebar toggle for docs mode #}
-        {% if mode == "docs" and config.extra.docs.show_toc | default(value=true) %}
+        {% if mode == "docs" %}
         <button class="sidebar-toggle" aria-label="Toggle table of contents" aria-expanded="true" aria-controls="sidebar">
             <svg class="sidebar-toggle__icon sidebar-toggle__icon--open" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect width="18" height="18" x="3" y="3" rx="2"/>
@@ -19,7 +20,7 @@
         {% endif %}
 
         {# ToC button for book mode #}
-        {% if mode == "book" and config.extra.book.show_toc | default(value=true) %}
+        {% if mode == "book" %}
         <button class="toc-toggle" aria-label="Open table of contents" aria-expanded="false" aria-controls="toc-overlay">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 12h18"/>
@@ -41,12 +42,18 @@
 
     {# Navigation Links #}
     <nav class="header__nav" role="navigation" aria-label="Main navigation">
-        {% if config.extra.nav_links %}
-        {% for link in config.extra.nav_links %}
-        <a href="{{ link.url | safe }}" class="header__link {% if current_path is defined and current_path == link.url %}active{% endif %}">
-            {{ link.name }}
-        </a>
-        {% endfor %}
+        {% if config.extra.nav %}
+            {% for link in config.extra.nav %}
+            <a href="{{ link.url | safe }}" class="header__link {% if current_path is defined and current_path == link.url %}active{% endif %}">
+                {{ link.name }}
+            </a>
+            {% endfor %}
+        {% elif config.extra.nav_links %}
+            {% for link in config.extra.nav_links %}
+            <a href="{{ link.url | safe }}" class="header__link {% if current_path is defined and current_path == link.url %}active{% endif %}">
+                {{ link.name }}
+            </a>
+            {% endfor %}
         {% endif %}
     </nav>
 

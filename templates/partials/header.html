@@ -1,12 +1,43 @@
 {# Header / Navigation #}
+{% set mode = config.extra.mode | default(value="site") %}
 <header class="header">
-    {# Logo / Title #}
-    <a href="{{ config.base_url | safe }}" class="header__logo">
-        {% if config.extra.logo %}
-        <img src="{{ get_url(path=config.extra.logo) | safe }}" alt="{{ config.title }}">
+    <div class="header__left">
+        {# Sidebar toggle for docs mode #}
+        {% if mode == "docs" and config.extra.docs.show_toc | default(value=true) %}
+        <button class="sidebar-toggle" aria-label="Toggle table of contents" aria-expanded="true" aria-controls="sidebar">
+            <svg class="sidebar-toggle__icon sidebar-toggle__icon--open" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2"/>
+                <path d="M9 3v18"/>
+                <path d="m14 9 3 3-3 3"/>
+            </svg>
+            <svg class="sidebar-toggle__icon sidebar-toggle__icon--closed" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2"/>
+                <path d="M9 3v18"/>
+                <path d="m16 15-3-3 3-3"/>
+            </svg>
+        </button>
         {% endif %}
-        <span>{{ config.title }}</span>
-    </a>
+
+        {# ToC button for book mode #}
+        {% if mode == "book" and config.extra.book.show_toc | default(value=true) %}
+        <button class="toc-toggle" aria-label="Open table of contents" aria-expanded="false" aria-controls="toc-overlay">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12h18"/>
+                <path d="M3 6h18"/>
+                <path d="M3 18h18"/>
+            </svg>
+            <span class="toc-toggle__label">Contents</span>
+        </button>
+        {% endif %}
+
+        {# Logo / Title #}
+        <a href="{{ config.base_url | safe }}" class="header__logo">
+            {% if config.extra.logo %}
+            <img src="{{ get_url(path=config.extra.logo) | safe }}" alt="{{ config.title }}">
+            {% endif %}
+            <span>{{ config.title }}</span>
+        </a>
+    </div>
 
     {# Navigation Links #}
     <nav class="header__nav" role="navigation" aria-label="Main navigation">
@@ -22,7 +53,6 @@
     {# Actions #}
     <div class="header__actions">
         {# Version picker (for docs mode) #}
-        {% set mode = config.extra.mode | default(value="site") %}
         {% if mode == "docs" and config.extra.docs.versioned is defined and config.extra.docs.versioned %}
         {% include "partials/version-picker.html" %}
         {% endif %}

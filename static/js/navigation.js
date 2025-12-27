@@ -1,42 +1,75 @@
 // =============================================================================
-// Navigation - Raskell Theme
-// Sidebar, keyboard navigation, and mobile menu
+// Navigation - Tanuki Theme (タヌキ)
+// Sidebar, keyboard navigation, ToC overlay, and mobile menu
 // =============================================================================
 
 (function() {
   'use strict';
 
+  const STORAGE_KEY_SIDEBAR = 'tanuki-sidebar-collapsed';
+
   // =============================================================================
-  // Sidebar
+  // Sidebar (Docs Mode - Collapsible)
   // =============================================================================
 
   function initSidebar() {
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
-    const toggleBtn = document.querySelector('.sidebar-toggle');
+    const headerToggleBtn = document.querySelector('.header .sidebar-toggle');
     const closeBtn = document.querySelector('.sidebar__close');
 
     if (!sidebar) return;
 
-    function openSidebar() {
-      sidebar.classList.add('open');
-      overlay?.classList.add('visible');
-      document.body.style.overflow = 'hidden';
-      toggleBtn?.setAttribute('aria-expanded', 'true');
+    // Check if we're on desktop
+    const isDesktop = () => window.innerWidth >= 1024;
+
+    // Restore collapsed state from localStorage (desktop only)
+    function restoreCollapsedState() {
+      if (isDesktop()) {
+        const isCollapsed = localStorage.getItem(STORAGE_KEY_SIDEBAR) === 'true';
+        if (isCollapsed) {
+          sidebar.classList.add('collapsed');
+          headerToggleBtn?.setAttribute('aria-expanded', 'false');
+        }
+      }
     }
 
+    // Toggle collapsed state (desktop)
+    function toggleCollapsed() {
+      const isCollapsed = sidebar.classList.toggle('collapsed');
+      headerToggleBtn?.setAttribute('aria-expanded', !isCollapsed);
+      try {
+        localStorage.setItem(STORAGE_KEY_SIDEBAR, isCollapsed);
+      } catch (e) {}
+    }
+
+    // Open mobile sidebar
+    function openSidebar() {
+      sidebar.classList.add('open');
+      sidebar.classList.remove('collapsed');
+      overlay?.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close mobile sidebar
     function closeSidebar() {
       sidebar.classList.remove('open');
       overlay?.classList.remove('visible');
       document.body.style.overflow = '';
-      toggleBtn?.setAttribute('aria-expanded', 'false');
     }
 
-    toggleBtn?.addEventListener('click', () => {
-      if (sidebar.classList.contains('open')) {
-        closeSidebar();
+    // Header toggle button behavior
+    headerToggleBtn?.addEventListener('click', () => {
+      if (isDesktop()) {
+        // Desktop: toggle collapsed state
+        toggleCollapsed();
       } else {
-        openSidebar();
+        // Mobile: open/close sidebar
+        if (sidebar.classList.contains('open')) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
       }
     });
 
@@ -48,6 +81,68 @@
       if (e.key === 'Escape' && sidebar.classList.contains('open')) {
         closeSidebar();
       }
+    });
+
+    // Restore state on load
+    restoreCollapsedState();
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      if (!isDesktop()) {
+        // On mobile, ensure sidebar is not collapsed
+        sidebar.classList.remove('collapsed');
+      } else {
+        // On desktop, restore collapsed state
+        restoreCollapsedState();
+      }
+    });
+  }
+
+  // =============================================================================
+  // ToC Overlay (Book Mode)
+  // =============================================================================
+
+  function initTocOverlay() {
+    const overlay = document.getElementById('toc-overlay');
+    const openBtn = document.querySelector('.toc-toggle');
+    const closeBtn = document.querySelector('.toc-overlay__close');
+    const backdrop = document.querySelector('.toc-overlay__backdrop');
+
+    if (!overlay) return;
+
+    function openOverlay() {
+      overlay.setAttribute('aria-hidden', 'false');
+      openBtn?.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      // Focus first link
+      setTimeout(() => {
+        overlay.querySelector('.toc-overlay__link')?.focus();
+      }, 100);
+    }
+
+    function closeOverlay() {
+      overlay.setAttribute('aria-hidden', 'true');
+      openBtn?.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      openBtn?.focus();
+    }
+
+    openBtn?.addEventListener('click', openOverlay);
+    closeBtn?.addEventListener('click', closeOverlay);
+    backdrop?.addEventListener('click', closeOverlay);
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.getAttribute('aria-hidden') === 'false') {
+        closeOverlay();
+      }
+    });
+
+    // Close when clicking a link
+    overlay.querySelectorAll('.toc-overlay__link').forEach(link => {
+      link.addEventListener('click', () => {
+        closeOverlay();
+      });
     });
   }
 
@@ -205,6 +300,7 @@
 
   function init() {
     initSidebar();
+    initTocOverlay();
     initTocCollapse();
     initKeyboardNav();
     initVersionPicker();

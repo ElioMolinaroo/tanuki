@@ -1,0 +1,36 @@
+{# Full-screen Table of Contents overlay for book mode #}
+<div id="toc-overlay" class="toc-overlay" aria-hidden="true" role="dialog" aria-label="Table of Contents">
+    <div class="toc-overlay__backdrop"></div>
+    <div class="toc-overlay__panel">
+        <div class="toc-overlay__header">
+            <h2 class="toc-overlay__title">Table of Contents</h2>
+            <button class="toc-overlay__close" aria-label="Close table of contents">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                </svg>
+            </button>
+        </div>
+        <nav class="toc-overlay__nav" aria-label="Book chapters">
+            {% set book_section = get_section(path="book/_index.md", metadata_only=true) %}
+            {% if book_section %}
+            <ul class="toc-overlay__list">
+                <li class="toc-overlay__item">
+                    <a href="{{ book_section.permalink | safe }}" class="toc-overlay__link toc-overlay__link--section">
+                        {{ book_section.title }}
+                    </a>
+                </li>
+                {% set book_pages = get_section(path="book/_index.md") %}
+                {% for page in book_pages.pages %}
+                <li class="toc-overlay__item">
+                    <a href="{{ page.permalink | safe }}" class="toc-overlay__link{% if current_path is defined and current_path == page.path %} toc-overlay__link--active{% endif %}">
+                        <span class="toc-overlay__chapter">Chapter {{ loop.index }}</span>
+                        <span class="toc-overlay__page-title">{{ page.title }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </nav>
+    </div>
+</div>

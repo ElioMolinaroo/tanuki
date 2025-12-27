@@ -43,6 +43,10 @@ github = "https://github.com/raskell-io/tanuki"
 default_theme = "auto"
 show_theme_toggle = true
 
+# Header behavior (defaults based on mode: fixed for docs, non-fixed for book/site)
+# Set explicitly to override: fixed_header = true or fixed_header = false
+# fixed_header = true
+
 # Navigation links
 nav_links = [
     { name = "Docs", url = "/docs" },
@@ -54,8 +58,13 @@ nav_links = [
 # Documentation settings
 [extra.docs]
 versioned = false
+show_toc = true  # Show collapsible sidebar ToC
 
 # Book settings
 [extra.book]
 show_landing = true
-show_toc = true
+show_toc = true  # Show full-screen ToC overlay button
+
+# Site/Blog settings
+[extra.site]
+show_hero = true

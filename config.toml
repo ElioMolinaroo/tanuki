@@ -1,0 +1,61 @@
+# Tanuki Theme Demo Configuration (タヌキ)
+# This config is for the demo site on GitHub Pages
+
+base_url = "https://raskell-io.github.io/tanuki"
+title = "Tanuki"
+description = "A whimsical, Nintendo-inspired Zola theme with Catppuccin colors"
+default_language = "en"
+
+compile_sass = true
+minify_html = true
+build_search_index = true
+generate_feeds = true
+
+taxonomies = [
+    { name = "tags", feed = true },
+]
+
+[search]
+include_title = true
+include_description = true
+include_path = true
+include_content = true
+
+[markdown]
+highlight_code = true
+highlight_theme = "css"
+highlight_themes_css = [
+    { theme = "OneHalfLight", filename = "syntax-light.css" },
+    { theme = "OneHalfDark", filename = "syntax-dark.css" },
+]
+smart_punctuation = true
+external_links_target_blank = true
+
+[extra]
+# Demo mode - this shows all sections
+mode = "site"
+
+# Site metadata
+author = "Tanuki Team"
+github = "https://github.com/raskell-io/tanuki"
+
+# Theme settings
+default_theme = "auto"
+show_theme_toggle = true
+
+# Navigation links
+nav_links = [
+    { name = "Docs", url = "/docs" },
+    { name = "Book", url = "/book" },
+    { name = "Blog", url = "/blog" },
+    { name = "GitHub", url = "https://github.com/raskell-io/tanuki" },
+]
+
+# Documentation settings
+[extra.docs]
+versioned = false
+
+# Book settings
+[extra.book]
+show_landing = true
+show_toc = true

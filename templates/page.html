@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block body_class %}page-{{ page.slug }}{% endblock %}
+
+{% block sidebar %}
+{% set mode = config.extra.mode | default(value="site") %}
+{% if mode == "docs" or mode == "book" %}
+{% include "partials/sidebar.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav_buttons %}
+{% set mode = config.extra.mode | default(value="site") %}
+{% if mode == "docs" or mode == "book" %}
+{% include "partials/nav-buttons.html" %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<article class="article">
+    <header class="article__header">
+        <h1>{{ page.title }}</h1>
+
+        {% if page.description %}
+        <p class="article__description">{{ page.description }}</p>
+        {% endif %}
+
+        {% set mode = config.extra.mode | default(value="site") %}
+        {% if mode == "site" %}
+        <div class="article__meta">
+            {% if page.date %}
+            <time datetime="{{ page.date }}">{{ page.date | date(format="%B %d, %Y") }}</time>
+            {% endif %}
+
+            {% if page.reading_time %}
+            <span>&middot;</span>
+            <span>{{ page.reading_time }} min read</span>
+            {% endif %}
+
+            {% if page.taxonomies.tags %}
+            <span>&middot;</span>
+            {% for tag in page.taxonomies.tags %}
+            <a href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}" class="tag">{{ tag }}</a>
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% endif %}
+    </header>
+
+    <div class="article__content">
+        {{ page.content | safe }}
+    </div>
+
+    {% if page.taxonomies.tags and config.extra.mode == "site" %}
+    <footer class="article__footer">
+        <div class="article__tags">
+            {% for tag in page.taxonomies.tags %}
+            <a href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}" class="tag">{{ tag }}</a>
+            {% endfor %}
+        </div>
+    </footer>
+    {% endif %}
+</article>
+
+{# Bottom navigation for docs/book #}
+{% set mode = config.extra.mode | default(value="site") %}
+{% if mode == "docs" or mode == "book" %}
+<nav class="page-nav" aria-label="Page navigation">
+    {% if page.earlier %}
+    <a href="{{ page.earlier.permalink | safe }}" class="page-nav__link page-nav__link--prev">
+        <span class="page-nav__label">Previous</span>
+        <span class="page-nav__title">{{ page.earlier.title }}</span>
+    </a>
+    {% endif %}
+
+    {% if page.later %}
+    <a href="{{ page.later.permalink | safe }}" class="page-nav__link page-nav__link--next">
+        <span class="page-nav__label">Next</span>
+        <span class="page-nav__title">{{ page.later.title }}</span>
+    </a>
+    {% endif %}
+</nav>
+{% endif %}
+{% endblock %}

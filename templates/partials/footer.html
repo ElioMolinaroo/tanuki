@@ -1,0 +1,22 @@
+{# Footer #}
+<footer class="footer">
+    <div class="container">
+        <div class="footer__content">
+            <p class="footer__copyright">
+                &copy; {{ now() | date(format="%Y") }} {{ config.extra.author | default(value=config.title) }}.
+                Built with <a href="https://www.getzola.org" target="_blank" rel="noopener">Zola</a>
+                and the <a href="https://github.com/raskell-io/raskell" target="_blank" rel="noopener">Raskell</a> theme.
+            </p>
+
+            <div class="footer__links">
+                {% if config.extra.social_links %}
+                {% for link in config.extra.social_links %}
+                <a href="{{ link.url }}" target="_blank" rel="noopener" aria-label="{{ link.name }}">
+                    {{ link.name }}
+                </a>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</footer>

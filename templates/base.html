@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="{{ lang | default(value='en') }}" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
+
+    {# Title #}
+    <title>{% block title %}{{ page.title | default(value=section.title) | default(value=config.title) }}{% endblock %} | {{ config.title }}</title>
+
+    {# Meta tags #}
+    {% if page.description %}
+    <meta name="description" content="{{ page.description }}">
+    {% elif section.description is defined and section.description %}
+    <meta name="description" content="{{ section.description }}">
+    {% else %}
+    <meta name="description" content="{{ config.description }}">
+    {% endif %}
+    {% if page.taxonomies.tags is defined and page.taxonomies.tags %}
+    <meta name="keywords" content="{{ page.taxonomies.tags | join(sep=', ') }}">
+    {% endif %}
+
+    {# Open Graph #}
+    {% if page.title is defined %}
+    <meta property="og:title" content="{{ page.title }}">
+    {% elif section.title is defined %}
+    <meta property="og:title" content="{{ section.title }}">
+    {% else %}
+    <meta property="og:title" content="{{ config.title }}">
+    {% endif %}
+    {% if page.description is defined %}
+    <meta property="og:description" content="{{ page.description }}">
+    {% elif section.description is defined %}
+    <meta property="og:description" content="{{ section.description }}">
+    {% else %}
+    <meta property="og:description" content="{{ config.description }}">
+    {% endif %}
+    <meta property="og:type" content="{% if page %}article{% else %}website{% endif %}">
+    {% if current_url is defined %}
+    <meta property="og:url" content="{{ current_url | safe }}">
+    {% endif %}
+
+    {# Stylesheets #}
+    <link rel="stylesheet" href="{{ get_url(path='style.css') | safe }}">
+
+    {# Syntax highlighting #}
+    {% if config.markdown.highlight_code is defined and config.markdown.highlight_code %}
+    <link rel="stylesheet" href="{{ get_url(path='syntax-light.css') | safe }}" media="(prefers-color-scheme: light)">
+    <link rel="stylesheet" href="{{ get_url(path='syntax-dark.css') | safe }}" media="(prefers-color-scheme: dark)">
+    {% endif %}
+
+    {# Preload fonts #}
+    <link rel="preload" href="{{ get_url(path='fonts/Geist-Variable.woff2') | safe }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ get_url(path='fonts/GeistMono-Variable.woff2') | safe }}" as="font" type="font/woff2" crossorigin>
+
+    {# Favicon #}
+    {% if config.extra.favicon %}
+    <link rel="icon" href="{{ get_url(path=config.extra.favicon) | safe }}">
+    {% endif %}
+
+    {# RSS Feed #}
+    {% if config.generate_feeds %}
+    <link rel="alternate" type="application/rss+xml" title="{{ config.title }}" href="{{ get_url(path='rss.xml') | safe }}">
+    {% endif %}
+
+    {# Theme script (inline to prevent flash) #}
+    <script>
+        (function() {
+            try {
+                var stored = localStorage.getItem('tanuki-theme') || 'auto';
+                var theme = stored === 'auto'
+                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : stored;
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch(e) {}
+        })();
+    </script>
+
+    {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    {# Determine layout mode #}
+    {% set mode = config.extra.mode | default(value="site") %}
+
+    {# Layout wrapper #}
+    <div class="layout layout--{{ mode }}">
+        {% block sidebar %}{% endblock %}
+
+        <div class="layout__main">
+            {% block header %}
+            {% include "partials/header.html" %}
+            {% endblock %}
+
+            {% block nav_buttons %}{% endblock %}
+
+            <main class="main-content">
+                {% block content %}{% endblock %}
+            </main>
+
+            {% block footer %}
+            {% include "partials/footer.html" %}
+            {% endblock %}
+        </div>
+    </div>
+
+    {# Sidebar overlay for mobile #}
+    <div class="sidebar-overlay" aria-hidden="true"></div>
+
+    {# Search overlay #}
+    {% if config.build_search_index %}
+    {% include "partials/search.html" %}
+    {% endif %}
+
+    {# Scroll to top button #}
+    <button class="fab scroll-to-top" aria-label="Scroll to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m18 15-6-6-6 6"/>
+        </svg>
+    </button>
+
+    {# Scripts #}
+    <script src="{{ get_url(path='js/theme.js') | safe }}" defer></script>
+    <script src="{{ get_url(path='js/navigation.js') | safe }}" defer></script>
+    <script src="{{ get_url(path='js/code.js') | safe }}" defer></script>
+
+    {% if config.build_search_index %}
+    <script src="{{ get_url(path='js/search.js') | safe }}" defer></script>
+    {% endif %}
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

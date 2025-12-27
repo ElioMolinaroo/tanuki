@@ -1,0 +1,31 @@
+# Tanuki Theme for Zola (タヌキ)
+# A versatile, Catppuccin-themed Zola theme for documentation, e-books, and blogs
+
+name = "tanuki"
+description = "A whimsical, Nintendo-inspired Zola theme with Catppuccin colors, Geist typography, and Lucide icons. Supports documentation (with versioning), e-books, and blog/landing pages. Named after the playful Japanese raccoon dog (タヌキ)."
+license = "MIT"
+homepage = "https://github.com/raskell-io/tanuki"
+repository = "https://github.com/raskell-io/tanuki"
+min_version = "0.19.0"
+demo = "https://tanuki.raskell.io"
+
+[author]
+name = "Raffael Schneider"
+homepage = "https://raskell.io"
+
+[extra]
+# Theme mode: "docs", "book", or "site"
+mode = "site"
+
+[extra.docs]
+# Documentation-specific settings
+versioned = true
+default_version = "latest"
+
+[extra.book]
+# E-book-specific settings
+show_landing = true
+
+[extra.site]
+# Blog/landing page settings
+show_hero = true

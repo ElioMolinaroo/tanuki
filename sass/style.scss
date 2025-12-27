@@ -1,0 +1,21 @@
+// =============================================================================
+// Tanuki Theme - Main Stylesheet (タヌキ)
+// A whimsical, Nintendo-inspired Zola theme with Catppuccin colors
+// =============================================================================
+
+// Base
+@import "base/catppuccin";
+@import "base/fonts";
+@import "base/reset";
+@import "base/typography";
+
+// Components
+@import "components/layout";
+@import "components/navigation";
+@import "components/sidebar";
+@import "components/theme-toggle";
+@import "components/buttons";
+@import "components/code";
+@import "components/search";
+@import "components/landing";
+@import "components/print";

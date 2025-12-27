@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config.title }}{% endblock %}
+
+{% block content %}
+{% set mode = config.extra.mode | default(value="site") %}
+
+{% if mode == "site" %}
+{# Site/Blog mode - Homepage #}
+{% if config.extra.site.show_hero | default(value=true) %}
+<section class="hero">
+    <h1 class="hero__title">{{ config.title }}</h1>
+    <p class="hero__subtitle">{{ config.description }}</p>
+    <div class="hero__actions">
+        {% if config.extra.cta_primary %}
+        <a href="{{ config.extra.cta_primary.url | safe }}" class="btn btn--primary btn--lg">
+            {{ config.extra.cta_primary.text }}
+        </a>
+        {% endif %}
+        {% if config.extra.cta_secondary %}
+        <a href="{{ config.extra.cta_secondary.url | safe }}" class="btn btn--secondary btn--lg">
+            {{ config.extra.cta_secondary.text }}
+        </a>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+{# Recent posts or content #}
+{% set section = get_section(path="_index.md") %}
+{% if section.pages %}
+<section class="section">
+    <div class="container">
+        <div class="section__header">
+            <h2 class="section__title">Latest Posts</h2>
+        </div>
+        <div class="card-grid">
+            {% for page in section.pages | slice(end=6) %}
+            <article class="card">
+                <h3 class="card__title">
+                    <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
+                </h3>
+                {% if page.description %}
+                <p class="card__description">{{ page.description }}</p>
+                {% endif %}
+                {% if page.date %}
+                <time datetime="{{ page.date }}">{{ page.date | date(format="%B %d, %Y") }}</time>
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% elif mode == "docs" or mode == "book" %}
+{# Docs/Book mode - redirect to first page or show landing #}
+{% set section = get_section(path="_index.md") %}
+{% if section.pages %}
+{% set first_page = section.pages | first %}
+<script>window.location.href = "{{ first_page.permalink | safe }}";</script>
+<p>Redirecting to <a href="{{ first_page.permalink | safe }}">{{ first_page.title }}</a>...</p>
+{% else %}
+<section class="hero">
+    <h1 class="hero__title">{{ config.title }}</h1>
+    <p class="hero__subtitle">{{ config.description }}</p>
+</section>
+{% endif %}
+{% endif %}
+{% endblock %}

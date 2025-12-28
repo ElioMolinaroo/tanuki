@@ -18,7 +18,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 // Anchor links (Zola insert_anchor_links)
-// Position # in the left margin, heading text stays aligned
+// Position hash icon in the left margin, heading text stays aligned
 h1, h2, h3, h4, h5, h6 {
   position: relative;
   cursor: pointer;
@@ -26,28 +26,40 @@ h1, h2, h3, h4, h5, h6 {
   .zola-anchor {
     position: absolute;
     right: 100%;
-    top: 0;
-    padding-right: 1.25rem;
-    color: var(--color-border);
+    top: 50%;
+    transform: translateY(-50%);
+    padding-right: 0.75rem;
     text-decoration: none;
     opacity: 0;
-    transition: opacity 0.2s ease, color 0.2s ease;
+    transition: opacity 0.2s ease;
     cursor: pointer;
-    line-height: 1;
 
     // Hide the emoji text
     font-size: 0 !important;
 
+    // Lucide hash icon via mask-image
     &::before {
-      content: "#";
-      font-size: var(--text-3xl); // Default, overridden per heading
-      font-weight: var(--font-normal);
-      line-height: inherit;
-      vertical-align: top;
+      content: "";
+      display: block;
+      width: 1em;
+      height: 1em;
+      background-color: var(--color-border);
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='4' x2='20' y1='9' y2='9'/%3E%3Cline x1='4' x2='20' y1='15' y2='15'/%3E%3Cline x1='10' x2='8' y1='3' y2='21'/%3E%3Cline x1='16' x2='14' y1='3' y2='21'/%3E%3C/svg%3E");
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='4' x2='20' y1='9' y2='9'/%3E%3Cline x1='4' x2='20' y1='15' y2='15'/%3E%3Cline x1='10' x2='8' y1='3' y2='21'/%3E%3Cline x1='16' x2='14' y1='3' y2='21'/%3E%3C/svg%3E");
+      -webkit-mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      transition: background-color 0.2s ease;
+    }
+
+    &:hover::before {
+      background-color: var(--color-text-muted);
     }
 
     &:hover {
-      color: var(--color-text-muted);
       text-decoration: none;
     }
   }
@@ -81,11 +93,11 @@ h1 {
   font-weight: var(--font-bold);
   margin-bottom: 1.5rem;
 
-  .zola-anchor::before { font-size: var(--text-5xl); }
+  .zola-anchor::before { width: 2.25rem; height: 2.25rem; }
 
   @media (min-width: 768px) {
     font-size: var(--text-5xl);
-    .zola-anchor::before { font-size: 4rem; }
+    .zola-anchor::before { width: 3rem; height: 3rem; }
   }
 }
 
@@ -96,11 +108,11 @@ h2 {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--color-border);
 
-  .zola-anchor::before { font-size: var(--text-3xl); }
+  .zola-anchor::before { width: 1.5rem; height: 1.5rem; }
 
   @media (min-width: 768px) {
     font-size: var(--text-3xl);
-    .zola-anchor::before { font-size: var(--text-4xl); }
+    .zola-anchor::before { width: 1.875rem; height: 1.875rem; }
   }
 }
 
@@ -109,11 +121,11 @@ h3 {
   margin-top: 2rem;
   margin-bottom: 0.75rem;
 
-  .zola-anchor::before { font-size: var(--text-2xl); }
+  .zola-anchor::before { width: 1.25rem; height: 1.25rem; }
 
   @media (min-width: 768px) {
     font-size: var(--text-2xl);
-    .zola-anchor::before { font-size: var(--text-3xl); }
+    .zola-anchor::before { width: 1.5rem; height: 1.5rem; }
   }
 }
 
@@ -122,7 +134,7 @@ h4 {
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
 
-  .zola-anchor::before { font-size: var(--text-xl); }
+  .zola-anchor::before { width: 1.125rem; height: 1.125rem; }
 }
 
 h5, h6 {
@@ -130,7 +142,7 @@ h5, h6 {
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
 
-  .zola-anchor::before { font-size: var(--text-base); }
+  .zola-anchor::before { width: 1rem; height: 1rem; }
 }
 
 // Paragraphs

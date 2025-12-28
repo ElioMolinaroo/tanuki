@@ -6,7 +6,7 @@ pre {
   position: relative;
   margin: 1.5rem 0;
   padding: 0;
-  background: #313244; // Catppuccin Mocha surface0 - matches sentinel.raskell.io
+  background: #313243;
   border: 1px solid var(--color-border-subtle, var(--color-border));
   border-radius: var(--radius-lg, 12px);
   overflow: hidden;
@@ -45,7 +45,7 @@ pre[data-lang]::before {
   letter-spacing: 0.05em;
   color: var(--color-text-muted);
   background: #1e1e2e; // Catppuccin Mocha base
-  border-bottom: 1px solid #313244; // Catppuccin Mocha surface0
+  border-bottom: 1px solid #313243;
 }
 
 // Copy button

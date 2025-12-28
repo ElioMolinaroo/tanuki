@@ -472,12 +472,17 @@
   pointer-events: none;
   z-index: 50;
 
-  // Account for sidebar in docs mode
+  // Account for sidebar in docs mode - follows sidebar width
   .layout--docs & {
     @media (min-width: 1024px) {
-      left: 280px; // sidebar width
+      left: var(--sidebar-width, 280px);
       transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+  }
+
+  // No transition during resize - follow immediately
+  body.sidebar-resizing .layout--docs & {
+    transition: none;
   }
 
   // When sidebar is collapsed

@@ -7,6 +7,7 @@
   'use strict';
 
   const STORAGE_KEY_SIDEBAR = 'tanuki-sidebar-collapsed';
+  const STORAGE_KEY_SIDEBAR_WIDTH = 'tanuki-sidebar-width';
 
   // =============================================================================
   // Sidebar (Docs Mode - Collapsible)
@@ -116,6 +117,153 @@
         restoreCollapsedState();
       }
     });
+  }
+
+  // =============================================================================
+  // Sidebar Resize (Desktop only)
+  // =============================================================================
+
+  function initSidebarResize() {
+    const sidebar = document.querySelector('.sidebar');
+    const resizeHandle = document.querySelector('.sidebar__resize-handle');
+
+    if (!sidebar || !resizeHandle) return;
+
+    const isDesktop = () => window.innerWidth >= 1024;
+
+    // Get min/max from CSS custom properties
+    const getConstraints = () => {
+      const styles = getComputedStyle(sidebar);
+      return {
+        min: parseInt(styles.getPropertyValue('--sidebar-min-width')) || 200,
+        max: parseInt(styles.getPropertyValue('--sidebar-max-width')) || 500
+      };
+    };
+
+    // Set width on both sidebar and root (for toggle positioning)
+    function setWidth(width) {
+      sidebar.style.setProperty('--sidebar-width', `${width}px`);
+      document.documentElement.style.setProperty('--sidebar-width', `${width}px`);
+    }
+
+    // Restore saved width
+    function restoreWidth() {
+      if (!isDesktop()) return;
+
+      const savedWidth = localStorage.getItem(STORAGE_KEY_SIDEBAR_WIDTH);
+      if (savedWidth) {
+        const width = parseInt(savedWidth);
+        const { min, max } = getConstraints();
+        if (width >= min && width <= max) {
+          setWidth(width);
+        }
+      }
+    }
+
+    // Handle resize
+    let isResizing = false;
+    let startX = 0;
+    let startWidth = 0;
+
+    function onMouseDown(e) {
+      if (!isDesktop()) return;
+
+      isResizing = true;
+      startX = e.clientX;
+      startWidth = sidebar.offsetWidth;
+
+      sidebar.classList.add('resizing');
+      document.body.classList.add('sidebar-resizing');
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+
+      e.preventDefault();
+    }
+
+    function onMouseMove(e) {
+      if (!isResizing) return;
+
+      const { min, max } = getConstraints();
+      const delta = e.clientX - startX;
+      const newWidth = Math.min(max, Math.max(min, startWidth + delta));
+
+      setWidth(newWidth);
+    }
+
+    function onMouseUp() {
+      if (!isResizing) return;
+
+      isResizing = false;
+      sidebar.classList.remove('resizing');
+      document.body.classList.remove('sidebar-resizing');
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+
+      // Save width
+      const width = sidebar.offsetWidth;
+      try {
+        localStorage.setItem(STORAGE_KEY_SIDEBAR_WIDTH, width);
+      } catch (e) {}
+    }
+
+    resizeHandle.addEventListener('mousedown', onMouseDown);
+
+    // Touch support
+    resizeHandle.addEventListener('touchstart', (e) => {
+      if (!isDesktop()) return;
+
+      const touch = e.touches[0];
+      isResizing = true;
+      startX = touch.clientX;
+      startWidth = sidebar.offsetWidth;
+
+      sidebar.classList.add('resizing');
+      document.body.classList.add('sidebar-resizing');
+
+      e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchmove', (e) => {
+      if (!isResizing) return;
+
+      const touch = e.touches[0];
+      const { min, max } = getConstraints();
+      const delta = touch.clientX - startX;
+      const newWidth = Math.min(max, Math.max(min, startWidth + delta));
+
+      setWidth(newWidth);
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+      if (!isResizing) return;
+
+      isResizing = false;
+      sidebar.classList.remove('resizing');
+      document.body.classList.remove('sidebar-resizing');
+
+      // Save width
+      const width = sidebar.offsetWidth;
+      try {
+        localStorage.setItem(STORAGE_KEY_SIDEBAR_WIDTH, width);
+      } catch (e) {}
+    });
+
+    // Double-click to reset to default
+    resizeHandle.addEventListener('dblclick', () => {
+      sidebar.style.removeProperty('--sidebar-width');
+      document.documentElement.style.removeProperty('--sidebar-width');
+      try {
+        localStorage.removeItem(STORAGE_KEY_SIDEBAR_WIDTH);
+      } catch (e) {}
+    });
+
+    // Set default width on root, then restore saved width if any
+    if (isDesktop()) {
+      document.documentElement.style.setProperty('--sidebar-width', '280px');
+    }
+    restoreWidth();
   }
 
   // =============================================================================
@@ -425,6 +573,7 @@
 
   function init() {
     initSidebar();
+    initSidebarResize();
     initTocOverlay();
     initTocCollapse();
     initKeyboardNav();

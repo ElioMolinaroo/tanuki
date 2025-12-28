@@ -38,9 +38,16 @@ cd ../..
 echo "Copying index.html..."
 cp examples/index.html public/index.html
 
+# Create symlinks for local testing (base_url has /tanuki/ prefix for GitHub Pages)
+mkdir -p public/tanuki
+ln -sf ../docs public/tanuki/docs
+ln -sf ../book public/tanuki/book
+ln -sf ../blog public/tanuki/blog
+ln -sf ../index.html public/tanuki/index.html
+
 echo "Build complete! Output in public/"
 echo "Serve with: python3 -m http.server 8080 -d public"
-echo "Then visit: http://127.0.0.1:8080/"
+echo "Then visit: http://127.0.0.1:8080/tanuki/"
 """
 
 [tasks.serve]
@@ -83,7 +90,7 @@ description = "Serve all built examples"
 depends = ["build"]
 run = """
 #!/usr/bin/env bash
-echo "Starting server on http://127.0.0.1:8080/"
+echo "Starting server on http://127.0.0.1:8080/tanuki/"
 echo "Press Ctrl+C to stop"
 # TODO: Use Sentinel once static file serving is ready
 # sentinel -c sentinel.kdl

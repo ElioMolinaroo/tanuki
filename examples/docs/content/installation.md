@@ -1,70 +1,59 @@
 +++
 title = "Installation"
-description = "How to install Tanuki in your Zola project."
+description = "How to install the Acme SDK in your project."
 weight = 1
 +++
 
 # Installation
 
-This guide walks you through installing the Tanuki theme in your Zola project.
+Get started with the Acme SDK in your project.
 
-## Prerequisites
+## Requirements
 
-Before you begin, ensure you have:
+- Node.js 18.0 or later
+- npm, yarn, or pnpm
 
-- [Zola](https://www.getzola.org) 0.19.0 or later installed
-- A Zola site initialized (`zola init my-site`)
-- Git installed (for submodule installation)
+## Quick Start
 
-## Installation Methods
-
-### Method 1: Git Submodule (Recommended)
-
-The recommended approach uses Git submodules, making updates easy:
+Install the SDK using your preferred package manager:
 
 ```bash
-cd your-zola-site
-git submodule add https://github.com/raskell-io/tanuki themes/tanuki
+# npm
+npm install @acme/sdk@1.2.0
+
+# yarn
+yarn add @acme/sdk@1.2.0
+
+# pnpm
+pnpm add @acme/sdk@1.2.0
 ```
 
-To update the theme later:
+## Verify Installation
 
-```bash
-git submodule update --remote themes/tanuki
+Create a simple test to verify the SDK is working:
+
+```javascript
+import { Acme } from '@acme/sdk';
+
+const client = new Acme({
+  apiKey: process.env.ACME_API_KEY,
+});
+
+// Test the connection
+const status = await client.ping();
+console.log('Acme SDK connected:', status);
 ```
 
-### Method 2: Manual Download
+## Version Compatibility
 
-If you prefer not to use Git submodules:
+| SDK Version | Node.js | API Version |
+|-------------|---------|-------------|
+| 1.2.x       | ≥18.0   | v3          |
+| 1.1.x       | ≥16.0   | v2          |
+| 1.0.x       | ≥14.0   | v1          |
 
-1. Download the latest release from [GitHub](https://github.com/raskell-io/tanuki/releases)
-2. Extract the archive
-3. Copy the contents to `themes/tanuki/` in your Zola site
-
-### Method 3: Clone Directly
-
-For development or contribution:
-
-```bash
-git clone https://github.com/raskell-io/tanuki themes/tanuki
-```
-
-## Verification
-
-After installation, verify the theme is recognized:
-
-```bash
-zola build
-```
-
-If successful, you should see output like:
-
-```
-Building site...
--> Creating 5 pages and 2 sections
-Done in 150ms.
-```
+> **Upgrading?** See the [migration guide](/configuration/) for breaking changes between versions.
 
 ## Next Steps
 
-Now that Tanuki is installed, proceed to [Configuration](/docs/configuration) to customize your site.
+Once installed, head to [Configuration](/configuration/) to set up your API credentials.

@@ -139,7 +139,19 @@
         // Auto-print when page loads (if triggered from print button)
         if (window.location.search.includes('auto=true')) {
             window.onload = function() {
+                // Close the tab after print dialog is closed (print or cancel)
+                window.addEventListener('afterprint', function() {
+                    window.close();
+                });
+
+                // Trigger print dialog
                 window.print();
+
+                // Fallback for browsers that don't fire afterprint reliably
+                // Close after a short delay if still open
+                setTimeout(function() {
+                    window.close();
+                }, 1000);
             };
         }
     </script>

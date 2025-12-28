@@ -1,208 +1,204 @@
 +++
 title = "Deployment"
-description = "Deploy your Tanuki-powered site."
+description = "Deploy applications using the Acme SDK."
 weight = 5
 +++
 
 # Deployment
 
-Tanuki-powered sites can be deployed anywhere that supports static hosting. This guide covers popular deployment options.
+Best practices for deploying applications that use the Acme SDK.
 
-## Building for Production
+## Environment Setup
 
-First, build your site:
+### Production Checklist
+
+Before deploying to production:
+
+- [ ] Use production API keys (not sandbox)
+- [ ] Set appropriate timeouts and retry limits
+- [ ] Configure error monitoring
+- [ ] Enable request logging
+- [ ] Set up webhook endpoints
+
+### Environment Variables
+
+Required environment variables:
 
 ```bash
-zola build
+# Required
+ACME_API_KEY=sk_live_xxxxx
+
+# Optional
+ACME_API_VERSION=v3
+ACME_TIMEOUT=30000
+ACME_RETRIES=3
+ACME_WEBHOOK_SECRET=whsec_xxxxx
 ```
 
-This creates a `public/` directory with your complete site.
+## Platform Guides
 
-## GitHub Pages
+### Node.js
 
-### Using GitHub Actions
+```javascript
+// server.js
+import { Acme } from '@acme/sdk';
+import express from 'express';
 
-Create `.github/workflows/deploy.yml`:
+const client = new Acme({
+  apiKey: process.env.ACME_API_KEY,
+  retries: 5,
+  timeout: 60000,
+});
 
-```yaml
-name: Deploy to GitHub Pages
+const app = express();
 
-on:
-  push:
-    branches: [main]
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Install Zola
-        uses: taiki-e/install-action@v2
-        with:
-          tool: zola@0.19.2
-
-      - name: Build
-        run: zola build
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-```
-
-### Configuration
-
-Set your base URL in `config.toml`:
-
-```toml
-base_url = "https://username.github.io/repo-name"
-```
-
-## Cloudflare Pages
-
-1. Connect your GitHub repository to Cloudflare Pages
-2. Set build command: `zola build`
-3. Set output directory: `public`
-4. Add environment variable: `ZOLA_VERSION` = `0.19.2`
-
-## Netlify
-
-### Using netlify.toml
-
-Create `netlify.toml` in your project root:
-
-```toml
-[build]
-  command = "zola build"
-  publish = "public"
-
-[build.environment]
-  ZOLA_VERSION = "0.19.2"
-
-[context.production.environment]
-  ZOLA_VERSION = "0.19.2"
-
-[[redirects]]
-  from = "/*"
-  to = "/404.html"
-  status = 404
-```
-
-## Vercel
-
-Create `vercel.json`:
-
-```json
-{
-  "build": {
-    "env": {
-      "ZOLA_VERSION": "0.19.2"
-    }
+app.get('/api/users/:id', async (req, res) => {
+  try {
+    const user = await client.users.get(req.params.id);
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-}
+});
+
+app.listen(3000);
 ```
 
-Use the Zola build command in project settings.
+### Serverless (AWS Lambda)
 
-## Docker
+```javascript
+// handler.js
+import { Acme } from '@acme/sdk';
 
-For containerized deployments:
+// Initialize outside handler for connection reuse
+const client = new Acme({
+  apiKey: process.env.ACME_API_KEY,
+});
 
-```dockerfile
-FROM ghcr.io/getzola/zola:v0.19.2 as builder
-WORKDIR /app
-COPY . .
-RUN zola build
-
-FROM nginx:alpine
-COPY --from=builder /app/public /usr/share/nginx/html
-EXPOSE 80
+export const handler = async (event) => {
+  const user = await client.users.get(event.userId);
+  return {
+    statusCode: 200,
+    body: JSON.stringify(user),
+  };
+};
 ```
 
-Build and run:
+### Edge Functions (Cloudflare Workers)
 
-```bash
-docker build -t my-docs .
-docker run -p 8080:80 my-docs
-```
+```javascript
+// worker.js
+import { Acme } from '@acme/sdk/edge';
 
-## Custom Server
+export default {
+  async fetch(request, env) {
+    const client = new Acme({
+      apiKey: env.ACME_API_KEY,
+    });
 
-For any static file server:
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('id');
+    const user = await client.users.get(userId);
 
-1. Build: `zola build`
-2. Serve the `public/` directory
-3. Configure 404 handling to serve `404.html`
-
-### Nginx Example
-
-```nginx
-server {
-    listen 80;
-    server_name docs.example.com;
-    root /var/www/docs/public;
-
-    location / {
-        try_files $uri $uri/ =404;
-    }
-
-    error_page 404 /404.html;
-}
-```
-
-### Caddy Example
-
-```caddyfile
-docs.example.com {
-    root * /var/www/docs/public
-    file_server
-    handle_errors {
-        rewrite * /404.html
-        file_server
-    }
-}
-```
-
-## Performance Tips
-
-### Optimize Images
-
-Before deploying, optimize images:
-
-```bash
-# Using imagemagick
-find static/images -name "*.png" -exec convert {} -strip -quality 85 {} \;
-
-# Using oxipng for PNG
-oxipng -o 3 static/images/*.png
-```
-
-### Enable Compression
-
-Most hosts handle this automatically, but ensure gzip/brotli is enabled.
-
-### Cache Headers
-
-Set long cache times for static assets. Example for Cloudflare Pages:
-
-```toml
-# In netlify.toml or _headers file
-[[headers]]
-  for = "/fonts/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    return new Response(JSON.stringify(user), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  },
+};
 ```
 
 ## Monitoring
 
-After deployment, verify:
+### Health Checks
 
-- [ ] All pages load correctly
-- [ ] Theme toggle works
-- [ ] Search functions properly
-- [ ] Navigation links work
-- [ ] Mobile layout is correct
+Implement health checks to monitor SDK connectivity:
+
+```javascript
+app.get('/health', async (req, res) => {
+  try {
+    await client.ping();
+    res.json({ status: 'healthy', sdk: 'connected' });
+  } catch (error) {
+    res.status(503).json({ status: 'unhealthy', error: error.message });
+  }
+});
+```
+
+### Error Tracking
+
+Integrate with error tracking services:
+
+```javascript
+import * as Sentry from '@sentry/node';
+import { Acme, AcmeError } from '@acme/sdk';
+
+const client = new Acme({
+  apiKey: process.env.ACME_API_KEY,
+  onError: (error) => {
+    if (error instanceof AcmeError) {
+      Sentry.captureException(error, {
+        tags: { sdk: 'acme', version: '1.2.0' },
+        extra: { requestId: error.requestId },
+      });
+    }
+  },
+});
+```
+
+## Rate Limiting
+
+The Acme API has rate limits. Handle them gracefully:
+
+| Plan | Requests/min | Burst |
+|------|--------------|-------|
+| Free | 60 | 10 |
+| Pro | 600 | 100 |
+| Enterprise | 6000 | 1000 |
+
+```javascript
+import { Acme, RateLimitError } from '@acme/sdk';
+
+try {
+  await client.users.list();
+} catch (error) {
+  if (error instanceof RateLimitError) {
+    console.log(`Rate limited. Retry after ${error.retryAfter}s`);
+    await sleep(error.retryAfter * 1000);
+    // Retry request
+  }
+}
+```
+
+## Security
+
+### API Key Rotation
+
+Rotate API keys periodically:
+
+1. Generate a new key in the [Dashboard](https://dashboard.acme.dev)
+2. Update your environment variables
+3. Deploy the update
+4. Revoke the old key
+
+### Webhook Security
+
+Always verify webhook signatures:
+
+```javascript
+const isValid = Acme.webhooks.verify(
+  payload,
+  signature,
+  process.env.ACME_WEBHOOK_SECRET
+);
+
+if (!isValid) {
+  throw new Error('Invalid webhook signature');
+}
+```
+
+## Support
+
+- **Documentation**: You're here!
+- **API Status**: [status.acme.dev](https://status.acme.dev)
+- **Support**: support@acme.dev
+- **Enterprise**: enterprise@acme.dev

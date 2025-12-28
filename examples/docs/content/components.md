@@ -1,184 +1,156 @@
 +++
-title = "Components"
-description = "UI components available in Tanuki."
-weight = 4
+title = "API Reference"
+description = "Complete API reference for the Acme SDK."
+weight = 3
 +++
 
-# Components
+# API Reference
 
-Tanuki includes a variety of UI components to enhance your content.
+Complete reference for all Acme SDK methods and types.
 
-## Buttons
+## Users
 
-Use button classes for call-to-action elements:
+Manage user accounts and profiles.
 
-```html
-<a href="/docs" class="btn btn--primary">Get Started</a>
-<a href="/demo" class="btn btn--secondary">View Demo</a>
-<button class="btn btn--ghost">Cancel</button>
+### `users.get(id)`
+
+Retrieve a user by ID.
+
+```javascript
+const user = await client.users.get('user_123');
+// Returns: { id, email, name, createdAt, ... }
 ```
 
-### Button Sizes
+### `users.list(options?)`
 
-```html
-<a class="btn btn--primary btn--sm">Small</a>
-<a class="btn btn--primary">Default</a>
-<a class="btn btn--primary btn--lg">Large</a>
+List all users with optional filtering.
+
+```javascript
+const users = await client.users.list({
+  limit: 20,
+  offset: 0,
+  status: 'active',
+});
 ```
 
-## Cards
+### `users.create(data)`
 
-Display content in card format:
+Create a new user.
 
-```html
-<div class="card">
-  <h3 class="card__title">Card Title</h3>
-  <p class="card__description">Card description goes here.</p>
-</div>
+```javascript
+const user = await client.users.create({
+  email: 'jane@example.com',
+  name: 'Jane Doe',
+  role: 'member',
+});
 ```
 
-### Card Grid
+### `users.update(id, data)`
 
-```html
-<div class="card-grid">
-  <div class="card">...</div>
-  <div class="card">...</div>
-  <div class="card">...</div>
-</div>
+Update an existing user.
+
+```javascript
+const user = await client.users.update('user_123', {
+  name: 'Jane Smith',
+});
 ```
 
-## Code Blocks
+### `users.delete(id)`
 
-Code blocks are automatically enhanced with:
+Delete a user.
 
-- Syntax highlighting
-- Language label
-- Copy button
-- Line numbers (optional)
-
-~~~markdown
-```rust
-fn main() {
-    println!("Hello, world!");
-}
-```
-~~~
-
-Renders as:
-
-```rust
-fn main() {
-    println!("Hello, world!");
-}
-```
-
-## Tables
-
-Tables are styled automatically:
-
-| Feature | Free | Pro | Enterprise |
-|---------|------|-----|------------|
-| Users | 1 | 10 | Unlimited |
-| Storage | 1GB | 100GB | 1TB |
-| Support | Community | Email | 24/7 Phone |
-
-## Blockquotes
-
-Standard blockquotes:
-
-> This is a blockquote. It can contain **bold**, *italic*, and `code`.
-
-### Admonitions
-
-Use GitHub-style alerts:
-
-```markdown
-> **Note**: This is informational.
-
-> **Warning**: Be careful here.
-
-> **Tip**: Here's a helpful hint.
-```
-
-## Lists
-
-### Unordered Lists
-
-- First item
-- Second item
-  - Nested item
-  - Another nested item
-- Third item
-
-### Ordered Lists
-
-1. First step
-2. Second step
-   1. Sub-step A
-   2. Sub-step B
-3. Third step
-
-### Task Lists
-
-- [x] Completed task
-- [ ] Pending task
-- [ ] Another pending task
-
-## Keyboard Shortcuts
-
-Display keyboard shortcuts:
-
-```html
-Press <kbd>Ctrl</kbd> + <kbd>S</kbd> to save.
-```
-
-Renders as: Press <kbd>Ctrl</kbd> + <kbd>S</kbd> to save.
-
-## Horizontal Rules
-
-Separate sections with:
-
-```markdown
----
+```javascript
+await client.users.delete('user_123');
 ```
 
 ---
 
-## Images
+## Widgets
 
-Images are responsive by default:
+> **New in v1.2.0** — Build custom UI components with the Widgets API.
 
-```markdown
-![Alt text](/images/screenshot.png)
+### `widgets.create(config)`
+
+Create a new widget instance.
+
+```javascript
+const widget = await client.widgets.create({
+  type: 'payment-form',
+  container: '#widget-container',
+  theme: 'dark',
+});
 ```
 
-### Image with Caption
+### `widgets.render()`
 
-```html
-<figure>
-  <img src="/images/screenshot.png" alt="Screenshot">
-  <figcaption>A helpful caption</figcaption>
-</figure>
+Render the widget to the DOM.
+
+```javascript
+await widget.render();
 ```
 
-## Details/Accordion
+### `widgets.on(event, handler)`
 
-Use the HTML `<details>` element:
+Subscribe to widget events.
 
-```html
-<details>
-  <summary>Click to expand</summary>
-  Hidden content goes here.
-</details>
+```javascript
+widget.on('success', (data) => {
+  console.log('Payment successful:', data);
+});
+
+widget.on('error', (error) => {
+  console.error('Widget error:', error);
+});
 ```
 
-<details>
-  <summary>Click to expand</summary>
+---
 
-  This content is hidden until you click the summary. It can contain any markdown, including:
+## Events
 
-  - Lists
-  - Code blocks
-  - Images
+Real-time event subscriptions.
 
-</details>
+### `events.subscribe(channel)`
+
+Subscribe to a channel for real-time updates.
+
+```javascript
+const subscription = client.events.subscribe('user_123');
+
+subscription.on('user.updated', (event) => {
+  console.log('User updated:', event.data);
+});
+```
+
+### `events.unsubscribe(channel)`
+
+Unsubscribe from a channel.
+
+```javascript
+client.events.unsubscribe('user_123');
+```
+
+---
+
+## Error Handling
+
+The SDK throws typed errors for different scenarios:
+
+```javascript
+import { AcmeError, RateLimitError, AuthError } from '@acme/sdk';
+
+try {
+  await client.users.get('user_123');
+} catch (error) {
+  if (error instanceof RateLimitError) {
+    console.log('Rate limited, retry after:', error.retryAfter);
+  } else if (error instanceof AuthError) {
+    console.log('Invalid API key');
+  } else if (error instanceof AcmeError) {
+    console.log('API error:', error.message);
+  }
+}
+```
+
+## Next Steps
+
+Learn about [Customization](/customization/) for advanced usage patterns.

@@ -72,6 +72,7 @@
                     ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
                     : stored;
                 document.documentElement.setAttribute('data-theme', theme);
+                document.documentElement.setAttribute('data-theme-setting', stored);
             } catch(e) {}
         })();
     </script>
@@ -105,7 +106,9 @@
             </main>
 
             {% block footer %}
+            {% if mode != "docs" and mode != "book" %}
             {% include "partials/footer.html" %}
+            {% endif %}
             {% endblock %}
         </div>
     </div>
@@ -118,9 +121,14 @@
     {% include "partials/search.html" %}
     {% endif %}
 
-    {# ToC overlay for book mode #}
+    {# ToC overlay for book mode only #}
     {% if mode == "book" %}
     {% include "partials/toc-overlay.html" %}
+    {% endif %}
+
+    {# Nav overlay for mobile menu (blog/site modes) #}
+    {% if mode != "docs" and mode != "book" %}
+    {% include "partials/nav-overlay.html" %}
     {% endif %}
 
     {# Scroll to top button #}

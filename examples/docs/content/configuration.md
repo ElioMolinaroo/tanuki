@@ -1,159 +1,94 @@
 +++
 title = "Configuration"
-description = "Configure Tanuki for your needs."
+description = "Configure the Acme SDK for your environment."
 weight = 2
 +++
 
 # Configuration
 
-Tanuki is highly configurable through your `config.toml` file. This page covers all available options.
+Learn how to configure the Acme SDK for different environments and use cases.
 
-## Basic Configuration
+## API Credentials
 
-At minimum, add the theme to your config:
+The SDK requires an API key for authentication. Get your key from the [Acme Dashboard](https://dashboard.acme.dev).
 
-```toml
-theme = "tanuki"
-base_url = "https://your-site.com"
-title = "My Documentation"
-description = "Documentation for my awesome project"
+```javascript
+import { Acme } from '@acme/sdk';
+
+const client = new Acme({
+  apiKey: 'your-api-key',
+  // Optional: specify API version (defaults to v3 in SDK 1.2.0)
+  apiVersion: 'v3',
+});
 ```
 
-## Theme Mode
+## Environment Variables
 
-Tanuki supports three modes. Set the mode in the `[extra]` section:
+We recommend using environment variables for sensitive configuration:
 
-```toml
-[extra]
-mode = "docs"  # Options: "docs", "book", "site"
+```bash
+# .env
+ACME_API_KEY=sk_live_xxxxx
+ACME_API_VERSION=v3
+ACME_TIMEOUT=30000
 ```
 
-### Documentation Mode
-
-Perfect for API docs, technical guides, and reference material:
-
-```toml
-[extra]
-mode = "docs"
-
-[extra.docs]
-versioned = true
-versions = [
-    { version = "2.0", path = "/docs/2.0", latest = true },
-    { version = "1.0", path = "/docs/1.0", latest = false },
-]
+```javascript
+const client = new Acme({
+  apiKey: process.env.ACME_API_KEY,
+  apiVersion: process.env.ACME_API_VERSION,
+  timeout: parseInt(process.env.ACME_TIMEOUT),
+});
 ```
 
-### Book Mode
+## Configuration Options
 
-Ideal for tutorials, courses, and long-form content:
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `apiKey` | string | required | Your Acme API key |
+| `apiVersion` | string | `"v3"` | API version to use |
+| `timeout` | number | `30000` | Request timeout in ms |
+| `retries` | number | `3` | Number of retry attempts |
+| `baseUrl` | string | `"https://api.acme.dev"` | API base URL |
 
-```toml
-[extra]
-mode = "book"
+## Environment-Specific Config
 
-[extra.book]
-show_landing = true
-show_toc = true
+### Development
+
+```javascript
+const client = new Acme({
+  apiKey: process.env.ACME_API_KEY,
+  baseUrl: 'https://sandbox.acme.dev',
+  debug: true,
+});
 ```
 
-### Site Mode
+### Production
 
-For blogs, portfolios, and landing pages:
-
-```toml
-[extra]
-mode = "site"
-
-[extra.site]
-show_hero = true
-posts_per_page = 10
+```javascript
+const client = new Acme({
+  apiKey: process.env.ACME_API_KEY,
+  retries: 5,
+  timeout: 60000,
+});
 ```
 
-## Navigation
+## TypeScript Support
 
-Configure the header navigation:
+The SDK includes full TypeScript definitions:
 
-```toml
-[extra]
-nav_links = [
-    { name = "Docs", url = "/docs" },
-    { name = "Guide", url = "/guide" },
-    { name = "Blog", url = "/blog" },
-]
+```typescript
+import { Acme, AcmeConfig, User } from '@acme/sdk';
+
+const config: AcmeConfig = {
+  apiKey: process.env.ACME_API_KEY!,
+  apiVersion: 'v3',
+};
+
+const client = new Acme(config);
+const user: User = await client.users.get('user_123');
 ```
 
-## Theme Settings
+## Next Steps
 
-Control the theme toggle behavior:
-
-```toml
-[extra]
-default_theme = "auto"      # "light", "dark", or "auto"
-show_theme_toggle = true    # Show/hide the toggle button
-```
-
-## Social Links
-
-Add social media links to the footer:
-
-```toml
-[extra]
-github = "https://github.com/your-org/your-repo"
-
-social_links = [
-    { name = "Twitter", url = "https://twitter.com/you", icon = "twitter" },
-    { name = "Discord", url = "https://discord.gg/xxx", icon = "message-circle" },
-]
-```
-
-## Search
-
-Enable full-text search:
-
-```toml
-build_search_index = true
-
-[search]
-include_title = true
-include_description = true
-include_path = true
-include_content = true
-```
-
-## Complete Example
-
-Here's a complete `config.toml` for documentation mode:
-
-```toml
-base_url = "https://docs.example.com"
-title = "My Project Docs"
-description = "Documentation for My Project"
-theme = "tanuki"
-
-compile_sass = true
-minify_html = true
-build_search_index = true
-
-[markdown]
-highlight_code = true
-highlight_theme = "css"
-
-[extra]
-mode = "docs"
-author = "Your Name"
-github = "https://github.com/your-org/your-project"
-show_theme_toggle = true
-
-nav_links = [
-    { name = "Guide", url = "/guide" },
-    { name = "API", url = "/api" },
-    { name = "Examples", url = "/examples" },
-]
-
-[extra.docs]
-versioned = true
-versions = [
-    { version = "2.0", path = "/docs/2.0", latest = true },
-]
-```
+See [API Reference](/components/) for available methods and types.

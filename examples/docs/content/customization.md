@@ -1,174 +1,202 @@
 +++
-title = "Customization"
-description = "Customize the look and feel of Tanuki."
-weight = 3
+title = "Advanced Usage"
+description = "Advanced patterns and customization for the Acme SDK."
+weight = 4
 +++
 
-# Customization
+# Advanced Usage
 
-Tanuki is built with customization in mind. This guide covers how to make the theme your own.
+Learn advanced patterns for getting the most out of the Acme SDK.
 
-## Colors
+## Middleware
 
-### Using Catppuccin Accents
+Add custom middleware to intercept requests and responses:
 
-The theme uses Catppuccin's color palette. You can change the accent color by overriding CSS variables:
+```javascript
+import { Acme } from '@acme/sdk';
 
-```css
-/* In your custom.css */
-:root {
-  --color-accent: var(--ctp-pink);
-  --color-accent-hover: var(--ctp-pink);
+const client = new Acme({
+  apiKey: process.env.ACME_API_KEY,
+  middleware: [
+    // Logging middleware
+    async (request, next) => {
+      console.log(`[Acme] ${request.method} ${request.url}`);
+      const start = Date.now();
+      const response = await next(request);
+      console.log(`[Acme] Completed in ${Date.now() - start}ms`);
+      return response;
+    },
+    // Auth refresh middleware
+    async (request, next) => {
+      try {
+        return await next(request);
+      } catch (error) {
+        if (error.code === 'TOKEN_EXPIRED') {
+          await refreshToken();
+          return next(request);
+        }
+        throw error;
+      }
+    },
+  ],
+});
+```
+
+## Batching Requests
+
+Batch multiple operations for better performance:
+
+```javascript
+const results = await client.batch([
+  { method: 'users.get', params: { id: 'user_1' } },
+  { method: 'users.get', params: { id: 'user_2' } },
+  { method: 'users.get', params: { id: 'user_3' } },
+]);
+
+// results[0] = user_1 data
+// results[1] = user_2 data
+// results[2] = user_3 data
+```
+
+## Pagination
+
+Handle paginated responses with built-in iterators:
+
+```javascript
+// Manual pagination
+let page = await client.users.list({ limit: 100 });
+
+while (page.hasMore) {
+  for (const user of page.data) {
+    console.log(user.name);
+  }
+  page = await page.next();
+}
+
+// Async iterator (recommended)
+for await (const user of client.users.listAll()) {
+  console.log(user.name);
 }
 ```
 
-Available accent colors from Catppuccin:
+## Custom HTTP Client
 
-| Variable | Light (Latte) | Dark (Mocha) |
-|----------|---------------|--------------|
-| `--ctp-rosewater` | #dc8a78 | #f5e0dc |
-| `--ctp-flamingo` | #dd7878 | #f2cdcd |
-| `--ctp-pink` | #ea76cb | #f5c2e7 |
-| `--ctp-mauve` | #8839ef | #cba6f7 |
-| `--ctp-red` | #d20f39 | #f38ba8 |
-| `--ctp-maroon` | #e64553 | #eba0ac |
-| `--ctp-peach` | #fe640b | #fab387 |
-| `--ctp-yellow` | #df8e1d | #f9e2af |
-| `--ctp-green` | #40a02b | #a6e3a1 |
-| `--ctp-teal` | #179299 | #94e2d5 |
-| `--ctp-sky` | #04a5e5 | #89dceb |
-| `--ctp-sapphire` | #209fb5 | #74c7ec |
-| `--ctp-blue` | #1e66f5 | #89b4fa |
-| `--ctp-lavender` | #7287fd | #b4befe |
+Use your own HTTP client for advanced networking needs:
 
-## Typography
+```javascript
+import { Acme } from '@acme/sdk';
+import axios from 'axios';
 
-### Custom Fonts
+const httpClient = {
+  async request(config) {
+    const response = await axios({
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      data: config.body,
+    });
+    return {
+      status: response.status,
+      headers: response.headers,
+      body: response.data,
+    };
+  },
+};
 
-To use your own fonts:
-
-1. Add your font files to `static/fonts/`
-2. Create a custom stylesheet:
-
-```css
-/* static/css/custom.css */
-@font-face {
-  font-family: 'Your Font';
-  src: url('/fonts/your-font.woff2') format('woff2');
-  font-weight: 100 900;
-  font-display: swap;
-}
-
-:root {
-  --font-sans: 'Your Font', system-ui, sans-serif;
-  --font-mono: 'Your Mono Font', monospace;
-}
+const client = new Acme({
+  apiKey: process.env.ACME_API_KEY,
+  httpClient,
+});
 ```
 
-3. Include it in your config:
+## Webhooks
 
-```toml
-[extra]
-stylesheets = ["css/custom.css"]
+Verify and handle incoming webhooks:
+
+```javascript
+import { Acme, WebhookError } from '@acme/sdk';
+import express from 'express';
+
+const app = express();
+
+app.post('/webhooks/acme', express.raw({ type: '*/*' }), (req, res) => {
+  const signature = req.headers['x-acme-signature'];
+
+  try {
+    const event = Acme.webhooks.verify(
+      req.body,
+      signature,
+      process.env.ACME_WEBHOOK_SECRET
+    );
+
+    switch (event.type) {
+      case 'user.created':
+        handleUserCreated(event.data);
+        break;
+      case 'user.deleted':
+        handleUserDeleted(event.data);
+        break;
+    }
+
+    res.status(200).send('OK');
+  } catch (error) {
+    if (error instanceof WebhookError) {
+      console.error('Invalid webhook signature');
+      res.status(400).send('Invalid signature');
+    }
+  }
+});
 ```
 
-## Layout
+## Caching
 
-### Adjusting Content Width
+Implement response caching for improved performance:
 
-Override the content max-width:
+```javascript
+import { Acme } from '@acme/sdk';
 
-```css
-.main-content {
-  max-width: 80ch;  /* Default is 72ch */
-}
+const cache = new Map();
+
+const client = new Acme({
+  apiKey: process.env.ACME_API_KEY,
+  cache: {
+    get: (key) => cache.get(key),
+    set: (key, value, ttl) => {
+      cache.set(key, value);
+      setTimeout(() => cache.delete(key), ttl);
+    },
+  },
+  cacheTTL: 60000, // 1 minute
+});
 ```
 
-### Sidebar Width
+## Migration from v1.1.x
 
-For docs/book mode:
+> **Breaking Changes in v1.2.0**
 
-```css
-.sidebar {
-  width: 280px;  /* Default is 260px */
-}
+### Async/Await
+
+All methods now return Promises instead of using callbacks:
+
+```javascript
+// v1.1.x (deprecated)
+client.users.get('user_123', (err, user) => {
+  if (err) throw err;
+  console.log(user);
+});
+
+// v1.2.x
+const user = await client.users.get('user_123');
 ```
 
-## Components
+### Import Changes
 
-### Custom Code Blocks
+```javascript
+// v1.1.x
+const Acme = require('@acme/sdk');
 
-Add language labels and customize code styling:
-
-```css
-.code-block {
-  border-radius: 12px;  /* More rounded corners */
-}
-
-.code-block__label {
-  background: var(--ctp-surface0);
-}
+// v1.2.x
+import { Acme } from '@acme/sdk';
+// or
+const { Acme } = require('@acme/sdk');
 ```
-
-### Button Styles
-
-Customize button appearance:
-
-```css
-.btn {
-  border-radius: 9999px;  /* Pill-shaped buttons */
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-```
-
-## Adding Custom CSS
-
-The cleanest way to add custom styles:
-
-1. Create `static/css/custom.css`
-2. Add your overrides
-3. Include in `config.toml`:
-
-```toml
-[extra]
-stylesheets = ["css/custom.css"]
-```
-
-## Adding Custom JavaScript
-
-For custom interactivity:
-
-1. Create `static/js/custom.js`
-2. Add your scripts
-3. Include in `config.toml`:
-
-```toml
-[extra]
-scripts = ["js/custom.js"]
-```
-
-## Logo and Branding
-
-Add your logo to the header:
-
-```toml
-[extra]
-logo = "images/logo.svg"  # Path relative to static/
-```
-
-## Favicon
-
-Set your favicon:
-
-```toml
-[extra]
-favicon = "favicon.ico"
-```
-
-For full favicon support, add multiple sizes to `static/`:
-
-- `favicon.ico` (32x32)
-- `apple-touch-icon.png` (180x180)
-- `favicon-32x32.png`
-- `favicon-16x16.png`

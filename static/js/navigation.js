@@ -16,6 +16,7 @@
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
     const headerToggleBtn = document.querySelector('.header .sidebar-toggle');
+    const tocToggleBtn = document.querySelector('.toc-toggle--docs'); // Mobile ToC button for docs
     const closeBtn = document.querySelector('.sidebar__close');
 
     if (!sidebar) return;
@@ -73,13 +74,32 @@
       }
     });
 
-    closeBtn?.addEventListener('click', closeSidebar);
-    overlay?.addEventListener('click', closeSidebar);
+    // Mobile ToC toggle button (docs mode) - always opens sidebar
+    tocToggleBtn?.addEventListener('click', () => {
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+        tocToggleBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        openSidebar();
+        tocToggleBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    closeBtn?.addEventListener('click', () => {
+      closeSidebar();
+      tocToggleBtn?.setAttribute('aria-expanded', 'false');
+    });
+
+    overlay?.addEventListener('click', () => {
+      closeSidebar();
+      tocToggleBtn?.setAttribute('aria-expanded', 'false');
+    });
 
     // Close on Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && sidebar.classList.contains('open')) {
         closeSidebar();
+        tocToggleBtn?.setAttribute('aria-expanded', 'false');
       }
     });
 
@@ -104,7 +124,8 @@
 
   function initTocOverlay() {
     const overlay = document.getElementById('toc-overlay');
-    const openBtn = document.querySelector('.toc-toggle');
+    // Only target book mode toc-toggle (not docs mode which opens sidebar)
+    const openBtn = document.querySelector('.toc-toggle:not(.toc-toggle--docs)');
     const closeBtn = document.querySelector('.toc-overlay__close');
     const backdrop = document.querySelector('.toc-overlay__backdrop');
 
@@ -228,18 +249,48 @@
   }
 
   // =============================================================================
-  // Mobile Menu
+  // Mobile Menu / Nav Overlay
   // =============================================================================
 
   function initMobileMenu() {
     const menuToggle = document.querySelector('.menu-toggle');
-    const nav = document.querySelector('.header__nav');
+    const navOverlay = document.getElementById('nav-overlay');
+    const closeBtn = document.querySelector('.nav-overlay__close');
+    const backdrop = document.querySelector('.nav-overlay__backdrop');
 
-    if (!menuToggle || !nav) return;
+    if (!menuToggle || !navOverlay) return;
 
-    menuToggle.addEventListener('click', () => {
-      const isOpen = nav.classList.toggle('open');
-      menuToggle.setAttribute('aria-expanded', isOpen);
+    function openNavOverlay() {
+      navOverlay.setAttribute('aria-hidden', 'false');
+      menuToggle.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      // Focus first link
+      setTimeout(() => {
+        navOverlay.querySelector('.nav-overlay__link')?.focus();
+      }, 100);
+    }
+
+    function closeNavOverlay() {
+      navOverlay.setAttribute('aria-hidden', 'true');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      menuToggle.focus();
+    }
+
+    menuToggle.addEventListener('click', openNavOverlay);
+    closeBtn?.addEventListener('click', closeNavOverlay);
+    backdrop?.addEventListener('click', closeNavOverlay);
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navOverlay.getAttribute('aria-hidden') === 'false') {
+        closeNavOverlay();
+      }
+    });
+
+    // Close when clicking a link
+    navOverlay.querySelectorAll('.nav-overlay__link').forEach(link => {
+      link.addEventListener('click', closeNavOverlay);
     });
   }
 
@@ -268,30 +319,104 @@
   // =============================================================================
 
   function initActiveTocHighlight() {
-    const tocLinks = document.querySelectorAll('.toc__link');
-    const headings = document.querySelectorAll('h1[id], h2[id], h3[id], h4[id]');
+    const tocLinks = document.querySelectorAll('.toc__link[href^="#"]');
 
-    if (!tocLinks.length || !headings.length) return;
+    if (!tocLinks.length) return;
+
+    // Build array of headings that have corresponding TOC links
+    const trackedHeadings = [];
+    tocLinks.forEach(link => {
+      const id = link.getAttribute('href').slice(1);
+      const heading = document.getElementById(id);
+      if (heading) {
+        trackedHeadings.push({ id, element: heading });
+      }
+    });
+
+    if (!trackedHeadings.length) return;
+
+    let currentActiveId = trackedHeadings[0].id;
 
     function updateActiveLink() {
-      const scrollTop = window.scrollY + 100;
-      let activeId = '';
+      const scrollTop = window.scrollY + 120;
 
-      headings.forEach(heading => {
-        if (heading.offsetTop <= scrollTop) {
-          activeId = heading.id;
+      // Find the last tracked heading that's above the scroll position
+      let newActiveId = trackedHeadings[0].id; // Default to first
+
+      for (let i = trackedHeadings.length - 1; i >= 0; i--) {
+        if (trackedHeadings[i].element.offsetTop <= scrollTop) {
+          newActiveId = trackedHeadings[i].id;
+          break;
         }
-      });
+      }
 
-      tocLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        const isActive = href === `#${activeId}`;
-        link.classList.toggle('active', isActive);
-      });
+      // Only update DOM if changed
+      if (newActiveId !== currentActiveId) {
+        currentActiveId = newActiveId;
+        tocLinks.forEach(link => {
+          const href = link.getAttribute('href');
+          link.classList.toggle('active', href === `#${currentActiveId}`);
+        });
+      }
     }
 
     window.addEventListener('scroll', updateActiveLink, { passive: true });
     updateActiveLink();
+  }
+
+  // =============================================================================
+  // Anchor Copy to Clipboard
+  // =============================================================================
+
+  function initAnchorCopy() {
+    // Find all headings with anchors
+    const headings = document.querySelectorAll('h1:has(.zola-anchor), h2:has(.zola-anchor), h3:has(.zola-anchor), h4:has(.zola-anchor), h5:has(.zola-anchor), h6:has(.zola-anchor)');
+
+    headings.forEach(heading => {
+      const anchor = heading.querySelector('.zola-anchor');
+      if (!anchor) return;
+
+      let hideTimeout;
+
+      const copyUrl = async (e) => {
+        e.preventDefault();
+
+        const url = anchor.href;
+
+        try {
+          await navigator.clipboard.writeText(url);
+
+          // Get or create indicator
+          let indicator = heading.querySelector('.anchor-copied');
+          if (!indicator) {
+            indicator = document.createElement('span');
+            indicator.className = 'anchor-copied';
+            indicator.textContent = 'Copied!';
+            heading.appendChild(indicator);
+          }
+
+          // Clear any pending hide
+          clearTimeout(hideTimeout);
+
+          // Show indicator
+          requestAnimationFrame(() => {
+            indicator.classList.add('show');
+          });
+
+          // Hide after delay
+          hideTimeout = setTimeout(() => {
+            indicator.classList.remove('show');
+          }, 1500);
+
+        } catch (err) {
+          // Fallback: navigate to the anchor
+          window.location.href = url;
+        }
+      };
+
+      // Click on heading or anchor copies URL
+      heading.addEventListener('click', copyUrl);
+    });
   }
 
   // =============================================================================
@@ -307,6 +432,7 @@
     initMobileMenu();
     initScrollToTop();
     initActiveTocHighlight();
+    initAnchorCopy();
   }
 
   if (document.readyState === 'loading') {

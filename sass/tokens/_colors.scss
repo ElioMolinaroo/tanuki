@@ -76,39 +76,38 @@ $ctp-latte: (
   }
 }
 
-// Dark theme (default)
+// Default (dark theme) - applied to :root, overridden by [data-theme]
+:root,
 [data-theme="dark"] {
   @include apply-theme($ctp-mocha);
   --color-scheme: dark;
 }
 
-// Light theme
+// Light theme palette
 [data-theme="light"] {
   @include apply-theme($ctp-latte);
   --color-scheme: light;
 }
 
-// Default to dark
-:root {
-  @include apply-theme($ctp-mocha);
-  --color-scheme: dark;
-}
-
 // -----------------------------------------------------------------------------
 // Semantic Color Mappings
 // Use these in components, not raw Catppuccin colors
+// These use var() references so they automatically update with theme changes
 // -----------------------------------------------------------------------------
 :root {
   // Text colors
   --color-text: var(--ctp-text);
+  --color-text-secondary: var(--ctp-subtext1);
   --color-text-muted: var(--ctp-subtext0);
-  --color-text-subtle: var(--ctp-subtext1);
+  --color-text-subtle: var(--ctp-overlay1);
   --color-heading: var(--ctp-text);
 
   // Backgrounds
   --color-bg: var(--ctp-base);
   --color-bg-alt: var(--ctp-mantle);
+  --color-bg-surface: var(--ctp-mantle);
   --color-bg-elevated: var(--ctp-surface0);
+  --color-bg-overlay: var(--ctp-surface1);
   --color-bg-hover: var(--ctp-surface1);
 
   // Borders
@@ -127,4 +126,14 @@ $ctp-latte: (
   --color-warning: var(--ctp-yellow);
   --color-error: var(--ctp-red);
   --color-info: var(--ctp-blue);
+}
+
+// -----------------------------------------------------------------------------
+// Light Theme Overrides (must come after :root semantic mappings)
+// -----------------------------------------------------------------------------
+[data-theme="light"] {
+  // Use subtler backgrounds in light mode
+  --color-bg-surface: var(--ctp-mantle);
+  --color-bg-elevated: var(--ctp-mantle);
+  --color-bg-overlay: var(--ctp-crust);
 }

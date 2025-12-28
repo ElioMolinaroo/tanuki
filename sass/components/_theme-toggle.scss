@@ -64,15 +64,18 @@
   height: var(--icon-size);
 }
 
-// Sun and Moon icons
+// All theme icons share these base styles
 .theme-toggle__sun,
-.theme-toggle__moon {
+.theme-toggle__moon,
+.theme-toggle__auto {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
 
   svg {
     width: var(--icon-size);
@@ -85,43 +88,55 @@
   }
 }
 
-// Sun icon (visible in dark mode)
+// Icon colors
 .theme-toggle__sun {
   color: var(--ctp-yellow);
+}
+
+.theme-toggle__moon {
+  color: var(--ctp-blue);
+}
+
+.theme-toggle__auto {
+  color: var(--ctp-lavender);
+}
+
+// Icon visibility based on current theme setting
+// Sun = light theme, Moon = dark theme, Eclipse = auto/system
+
+// Default: show moon (dark is default)
+.theme-toggle__moon {
   opacity: 1;
   transform: rotate(0deg) scale(1);
 }
 
-// Moon icon (visible in light mode)
-.theme-toggle__moon {
-  color: var(--ctp-blue);
-  opacity: 0;
-  transform: rotate(-90deg) scale(0.5);
-}
-
-// Light mode state
-[data-theme="light"] .theme-toggle,
-:root:not([data-theme="dark"]) .theme-toggle {
-  @media (prefers-color-scheme: light) {
-    .theme-toggle__sun {
-      opacity: 0;
-      transform: rotate(90deg) scale(0.5);
-    }
-
-    .theme-toggle__moon {
-      opacity: 1;
-      transform: rotate(0deg) scale(1);
-    }
-  }
-}
-
-[data-theme="light"] .theme-toggle {
-  .theme-toggle__sun {
-    opacity: 0;
-    transform: rotate(90deg) scale(0.5);
-  }
-
+// When setting is light: show sun
+[data-theme-setting="light"] .theme-toggle {
   .theme-toggle__moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+  .theme-toggle__sun {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+// When setting is dark: show moon
+[data-theme-setting="dark"] .theme-toggle {
+  .theme-toggle__moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+// When setting is auto: show eclipse
+[data-theme-setting="auto"] .theme-toggle {
+  .theme-toggle__moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+  .theme-toggle__auto {
     opacity: 1;
     transform: rotate(0deg) scale(1);
   }

@@ -12,48 +12,35 @@ set -e
 
 echo "Building example sites..."
 
-# Clean and create output directory with /tanuki/ prefix for GitHub Pages
+# Clean and create output directory
 rm -rf public
-mkdir -p public/tanuki
+mkdir -p public
 
 # Build docs example
 echo "Building docs example..."
 cd examples/docs
-zola build --output-dir ../../public/tanuki/docs
+zola build --output-dir ../../public/docs
 cd ../..
 
 # Build book example
 echo "Building book example..."
 cd examples/book
-zola build --output-dir ../../public/tanuki/book
+zola build --output-dir ../../public/book
 cd ../..
 
 # Build blog example
 echo "Building blog example..."
 cd examples/blog
-zola build --output-dir ../../public/tanuki/blog
+zola build --output-dir ../../public/blog
 cd ../..
 
-# Copy the combined index.html to both locations
+# Copy the combined index.html
 echo "Copying index.html..."
-cp examples/index.html public/tanuki/index.html
-# Also create a redirect at root for GitHub Pages
-cat > public/index.html << 'EOF'
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="refresh" content="0; url=tanuki/">
-    <link rel="canonical" href="tanuki/">
-</head>
-<body>
-    <p>Redirecting to <a href="tanuki/">Tanuki Theme Examples</a>...</p>
-</body>
-</html>
-EOF
+cp examples/index.html public/index.html
 
 echo "Build complete! Output in public/"
 echo "Serve with: python3 -m http.server 8080 -d public"
-echo "Then visit: http://127.0.0.1:8080/tanuki/"
+echo "Then visit: http://127.0.0.1:8080/"
 """
 
 [tasks.serve]
@@ -96,7 +83,7 @@ description = "Serve all built examples"
 depends = ["build"]
 run = """
 #!/usr/bin/env bash
-echo "Starting server on http://127.0.0.1:8080/tanuki/"
+echo "Starting server on http://127.0.0.1:8080/"
 echo "Press Ctrl+C to stop"
 # TODO: Use Sentinel once static file serving is ready
 # sentinel -c sentinel.kdl

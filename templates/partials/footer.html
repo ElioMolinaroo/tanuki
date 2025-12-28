@@ -1,22 +1,22 @@
 {# Footer #}
-<footer class="footer">
+<footer class="footer" role="contentinfo">
     <div class="container">
         <div class="footer__content">
             <p class="footer__copyright">
                 &copy; {{ now() | date(format="%Y") }} {{ config.extra.author | default(value=config.title) }}.
-                Built with <a href="https://www.getzola.org" target="_blank" rel="noopener">Zola</a>
-                and the <a href="https://github.com/raskell-io/raskell" target="_blank" rel="noopener">Raskell</a> theme.
+                Built with <a href="https://www.getzola.org" target="_blank" rel="noopener noreferrer" aria-label="Zola static site generator (opens in new tab)">Zola</a>
+                and the <a href="https://github.com/raskell-io/tanuki" target="_blank" rel="noopener noreferrer" aria-label="Tanuki theme on GitHub (opens in new tab)">Tanuki</a> theme.
             </p>
 
-            <div class="footer__links">
-                {% if config.extra.social_links %}
+            {% if config.extra.social_links %}
+            <nav class="footer__links" aria-label="Social links">
                 {% for link in config.extra.social_links %}
-                <a href="{{ link.url }}" target="_blank" rel="noopener" aria-label="{{ link.name }}">
+                <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ link.name }} (opens in new tab)">
                     {{ link.name }}
                 </a>
                 {% endfor %}
-                {% endif %}
-            </div>
+            </nav>
+            {% endif %}
         </div>
     </div>
 </footer>

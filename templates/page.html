@@ -19,47 +19,60 @@
 {% endblock %}
 
 {% block content %}
-<article class="article">
+<article class="article" itemscope itemtype="https://schema.org/Article" aria-labelledby="article-title">
     {% if mode == "site" or mode == "blog" %}
     <header class="article__header">
-        <h1>{{ page.title }}</h1>
+        <h1 id="article-title" itemprop="headline">{{ page.title }}</h1>
 
         {% if page.description %}
-        <p class="article__description">{{ page.description }}</p>
+        <p class="article__description" itemprop="description">{{ page.description }}</p>
         {% endif %}
 
         <div class="article__meta">
-            {% if page.date %}
-            <time datetime="{{ page.date }}">{{ page.date | date(format="%B %d, %Y") }}</time>
+            {% if page.date is defined and page.date %}
+            <time datetime="{{ page.date | date(format='%Y-%m-%d') }}" itemprop="datePublished">{{ page.date | date(format="%B %d, %Y") }}</time>
             {% endif %}
 
             {% if page.reading_time %}
-            <span>&middot;</span>
-            <span>{{ page.reading_time }} min read</span>
+            <span aria-hidden="true">&middot;</span>
+            <span><span class="sr-only">Estimated reading time: </span>{{ page.reading_time }} min read</span>
             {% endif %}
 
             {% if page.taxonomies.tags %}
-            <span>&middot;</span>
-            {% for tag in page.taxonomies.tags %}
-            <a href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}" class="tag">{{ tag }}</a>
-            {% endfor %}
+            <span aria-hidden="true">&middot;</span>
+            <span itemprop="keywords">
+                {% for tag in page.taxonomies.tags %}
+                <a href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}" class="tag" rel="tag">{{ tag }}</a>{% if not loop.last %} {% endif %}
+                {% endfor %}
+            </span>
             {% endif %}
         </div>
     </header>
+    {% else %}
+    {# For docs/book mode, still add the hidden heading for accessibility #}
+    <h1 id="article-title" class="sr-only" itemprop="headline">{{ page.title }}</h1>
     {% endif %}
 
-    <div class="article__content">
+    <div class="article__content" itemprop="articleBody">
         {{ page.content | safe }}
     </div>
 
     {% if page.taxonomies.tags and (mode == "site" or mode == "blog") %}
     <footer class="article__footer">
-        <div class="article__tags">
+        <nav class="article__tags" aria-label="Article tags">
             {% for tag in page.taxonomies.tags %}
-            <a href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}" class="tag">{{ tag }}</a>
+            <a href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}" class="tag" rel="tag">{{ tag }}</a>
             {% endfor %}
-        </div>
+        </nav>
     </footer>
+    {% endif %}
+
+    {# Hidden metadata for structured data #}
+    {% if config.extra.author is defined and config.extra.author %}
+    <meta itemprop="author" content="{{ config.extra.author }}">
+    {% endif %}
+    {% if page.updated is defined and page.updated %}
+    <meta itemprop="dateModified" content="{{ page.updated | date(format='%Y-%m-%d') }}">
     {% endif %}
 </article>
 
@@ -67,15 +80,15 @@
 {% if mode == "docs" or mode == "book" %}
 <nav class="page-nav" aria-label="Page navigation">
     {% if page.earlier %}
-    <a href="{{ page.earlier.permalink | safe }}" class="page-nav__link page-nav__link--prev">
-        <span class="page-nav__label">Previous</span>
+    <a href="{{ page.earlier.permalink | safe }}" class="page-nav__link page-nav__link--prev" rel="prev" aria-label="Previous page: {{ page.earlier.title }}">
+        <span class="page-nav__label" aria-hidden="true">Previous</span>
         <span class="page-nav__title">{{ page.earlier.title }}</span>
     </a>
     {% endif %}
 
     {% if page.later %}
-    <a href="{{ page.later.permalink | safe }}" class="page-nav__link page-nav__link--next">
-        <span class="page-nav__label">Next</span>
+    <a href="{{ page.later.permalink | safe }}" class="page-nav__link page-nav__link--next" rel="next" aria-label="Next page: {{ page.later.title }}">
+        <span class="page-nav__label" aria-hidden="true">Next</span>
         <span class="page-nav__title">{{ page.later.title }}</span>
     </a>
     {% endif %}

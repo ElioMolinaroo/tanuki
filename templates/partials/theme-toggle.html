@@ -1,5 +1,5 @@
 {# Theme Toggle Button - Nintendo-style whimsical #}
-<button class="theme-toggle" type="button" aria-label="Toggle theme">
+<button class="theme-toggle" type="button" aria-label="Toggle color theme: cycles through light, dark, and auto modes" aria-live="polite" title="Toggle theme">
     <span class="theme-toggle__icons">
         {# Sun icon (for switching to light mode) #}
         <span class="theme-toggle__sun" aria-hidden="true">
@@ -31,4 +31,5 @@
             </svg>
         </span>
     </span>
+    <span class="sr-only theme-toggle__status">Current theme: auto</span>
 </button>

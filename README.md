@@ -1,10 +1,40 @@
-# Tanuki (タヌキ)
+<div align="center">
 
-An opinionated Zola theme for documentation, books, and blogs. Beautiful, accessible, and thoughtfully designed.
+<h1 align="center">
+  <img src="static/img/tanuki-icon.png" alt="tanuki mascot" width="96" />
+  <br>
+  Tanuki
+</h1>
+
+<p align="center">
+  <em>An opinionated Zola theme for documentation, books, and blogs.</em><br>
+  <em>Beautiful, accessible, and thoughtfully designed.</em>
+</p>
+
+<p align="center">
+  <a href="https://www.getzola.org/">
+    <img alt="Zola" src="https://img.shields.io/badge/Zola-0.19+-000000?logo=zola&logoColor=white&style=for-the-badge">
+  </a>
+  <a href="https://catppuccin.com/">
+    <img alt="Catppuccin" src="https://img.shields.io/badge/Catppuccin-cba6f7?style=for-the-badge">
+  </a>
+  <a href="LICENSE">
+    <img alt="License" src="https://img.shields.io/badge/License-MIT-a6e3a1?style=for-the-badge">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://tanuki.raskell.io">Live Demo</a> •
+  <a href="https://tanuki.raskell.io/docs/">Documentation</a> •
+  <a href="https://tanuki.raskell.io/book/">Book Example</a> •
+  <a href="https://tanuki.raskell.io/blog/">Blog Example</a>
+</p>
+
+<hr />
+
+</div>
 
 ![Tanuki Theme](screenshot.png)
-
-**[Live Demo](https://tanuki.raskell.io)** | **[Documentation](https://tanuki.raskell.io/docs/)**
 
 ## Features
 
@@ -133,4 +163,4 @@ Modern browsers (Chrome 88+, Firefox 78+, Safari 14+, Edge 88+)
 
 ---
 
-Made with care by [raskell.io](https://raskell.io)
+<p align="center">Made with care by <a href="https://raskell.io">raskell.io</a></p>

@@ -113,8 +113,8 @@
             </a>
             {% endif %}
 
-            {# Print all pages (docs mode) #}
-            {% if mode == "docs" %}
+            {# Print all pages (docs and book modes) #}
+            {% if mode == "docs" or mode == "book" %}
             <a href="{{ get_url(path='print') | safe }}?auto=true" class="toc-overlay__print" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 6 2 18 2 18 9"/>

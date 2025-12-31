@@ -780,6 +780,7 @@
         .config-tab--docs.active { border-color: var(--docs-color); }
         .config-tab--book.active { border-color: var(--book-color); }
         .config-tab--blog.active { border-color: var(--blog-color); }
+        .config-tab--product.active { border-color: var(--product-color); }
 
         .config-tab svg {
             width: 18px;
@@ -789,6 +790,7 @@
         .config-tab--docs svg { color: var(--docs-color); }
         .config-tab--book svg { color: var(--book-color); }
         .config-tab--blog svg { color: var(--blog-color); }
+        .config-tab--product svg { color: var(--product-color); }
 
         .config-panel {
             display: none;
@@ -1574,6 +1576,13 @@
                         </svg>
                         Blog
                     </button>
+                    <button class="config-tab config-tab--product" role="tab" aria-selected="false" aria-controls="config-product" id="tab-product" onclick="switchConfigTab('product')">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                            <circle cx="12" cy="12" r="4"/>
+                        </svg>
+                        Product
+                    </button>
                 </div>
 
                 <div class="config-panel active" id="config-docs" role="tabpanel" aria-labelledby="tab-docs">
@@ -1684,6 +1693,49 @@
 <span class="toml-key">url</span> = <span class="toml-string">"/about/"</span></code></pre>
                     </div>
                 </div>
+
+                <div class="config-panel" id="config-product" role="tabpanel" aria-labelledby="tab-product">
+                    <div class="config-code">
+                        <div class="config-code__header">
+                            <span class="config-code__filename">config.toml</span>
+                            <button class="config-code__copy" onclick="copyConfig('product')" aria-label="Copy configuration">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                                </svg>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                        <pre><code id="config-product-code"><span class="toml-comment"># Product landing page with features and install</span>
+<span class="toml-key">base_url</span> = <span class="toml-string">"https://myproduct.example.com"</span>
+<span class="toml-key">title</span> = <span class="toml-string">"My Product"</span>
+<span class="toml-key">description</span> = <span class="toml-string">"A powerful tool for developers"</span>
+<span class="toml-key">theme</span> = <span class="toml-string">"tanuki"</span>
+
+<span class="toml-table">[markdown]</span>
+<span class="toml-key">highlight_code</span> = <span class="toml-bool">true</span>
+<span class="toml-key">highlight_theme</span> = <span class="toml-string">"css"</span>
+
+<span class="toml-table">[extra]</span>
+<span class="toml-key">mode</span> = <span class="toml-string">"product"</span>
+<span class="toml-key">github</span> = <span class="toml-string">"https://github.com/you/project"</span>
+
+<span class="toml-comment"># Product-specific settings</span>
+<span class="toml-table">[extra.product]</span>
+<span class="toml-key">icon</span> = <span class="toml-string">"assets/product-icon.png"</span>
+<span class="toml-key">tagline</span> = <span class="toml-string">"Built for modern developers"</span>
+<span class="toml-key">install_command</span> = <span class="toml-string">"curl -fsSL get.example.com | sh"</span>
+
+<span class="toml-comment"># Navigation</span>
+<span class="toml-array-table">[[extra.nav]]</span>
+<span class="toml-key">name</span> = <span class="toml-string">"Features"</span>
+<span class="toml-key">url</span> = <span class="toml-string">"#features"</span>
+
+<span class="toml-array-table">[[extra.nav]]</span>
+<span class="toml-key">name</span> = <span class="toml-string">"Install"</span>
+<span class="toml-key">url</span> = <span class="toml-string">"#install"</span></code></pre>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -1698,7 +1750,7 @@
                         <img class="footer__logo" src="./docs/img/tanuki-icon.avif" alt="Tanuki logo" width="64" height="64">
                     </div>
                     <div class="footer__tagline">
-                        <p class="footer__title" itemprop="name">An opinionated Zola theme<br>for docs, books, and blogs</p>
+                        <p class="footer__title" itemprop="name">An opinionated Zola theme<br>for docs, books, blogs, and products</p>
                         <p class="footer__description" itemprop="description">Beautiful, accessible, and thoughtfully designed. Tanuki makes decisions so you can focus on content.</p>
                     </div>
                 </div>

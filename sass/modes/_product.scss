@@ -547,6 +547,59 @@
 }
 
 // =============================================================================
+// Support Section
+// =============================================================================
+
+.product-support {
+  padding: var(--space-16) var(--space-6);
+  background: linear-gradient(135deg, var(--color-bg-alt) 0%, var(--color-bg) 100%);
+  text-align: center;
+}
+
+.product-support__content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.product-support__text {
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-8);
+  line-height: 1.6;
+}
+
+.product-support__button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  background: #ff5e5b;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(255, 94, 91, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 94, 91, 0.4);
+    background: #ff4b47;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.product-support__icon {
+  width: 24px;
+  height: 24px;
+}
+
+// =============================================================================
 // Product Footer
 // =============================================================================
 

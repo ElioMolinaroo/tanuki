@@ -119,6 +119,14 @@
     return lang === 'kdl';
   }
 
+  // Pages where KDL validation should be skipped (partial snippets)
+  function shouldSkipValidation() {
+    const path = window.location.pathname;
+    // Skip validation on pages with partial snippets
+    return path.includes('/reference/directives') ||
+           path.includes('/examples/');  // Example pages show advanced features as snippets
+  }
+
   async function loadWASM() {
     if (wasmModule) return wasmModule;
     if (wasmLoadPromise) return wasmLoadPromise;
@@ -291,10 +299,11 @@
       const copyBtn = createCopyButton();
       buttonContainer.appendChild(copyBtn);
 
-      // Check if this is a KDL block
+      // Check if this is a KDL block that should be validated
       const isKDL = isKDLBlock(pre, code);
+      const skipValidation = shouldSkipValidation();
 
-      if (isKDL) {
+      if (isKDL && !skipValidation) {
         // Create edit button (hover-only, before validate)
         const editBtn = createEditButton();
         buttonContainer.appendChild(editBtn);

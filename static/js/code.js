@@ -119,16 +119,15 @@
     return lang === 'kdl';
   }
 
-  // Pages where KDL validation should be skipped (partial snippets only)
+  // Pages where KDL validation should be skipped (partial snippets)
   function shouldSkipValidation() {
     const path = window.location.pathname;
-    // Skip validation only on pages with partial snippets
-    // Most example pages have full configs and should be validated
+    // Skip validation on pages with partial snippets or getting-started guides
+    // TODO: Enable validation for examples once WASM module is rebuilt with
+    // WASM-compatible dependencies (currently blocked by jsonschema -> getrandom)
     return path.includes('/reference/directives') ||
-           path.includes('/getting-started/') ||
-           // Example pages with snippets instead of full configs:
-           path.includes('/examples/api-validation') ||
-           path.includes('/examples/configurations');
+           path.includes('/examples/') ||
+           path.includes('/getting-started/');
   }
 
   async function loadWASM() {

@@ -94,6 +94,99 @@
 })();
 
 // =============================================================================
+// Navigation Dropdowns
+// =============================================================================
+
+class NavDropdowns {
+  constructor() {
+    this.dropdowns = document.querySelectorAll('.nav-dropdown');
+    this.activeDropdown = null;
+
+    if (this.dropdowns.length > 0) {
+      this.init();
+    }
+  }
+
+  init() {
+    this.dropdowns.forEach(dropdown => {
+      const trigger = dropdown.querySelector('.nav-dropdown__trigger');
+      const menu = dropdown.querySelector('.nav-dropdown__menu');
+
+      if (trigger && menu) {
+        // Click to toggle
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.toggle(dropdown);
+        });
+
+        // Keyboard navigation
+        trigger.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.toggle(dropdown);
+          } else if (e.key === 'Escape') {
+            this.close(dropdown);
+          }
+        });
+
+        // Close on menu link click
+        menu.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            this.close(dropdown);
+          });
+        });
+      }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (this.activeDropdown && !this.activeDropdown.contains(e.target)) {
+        this.close(this.activeDropdown);
+      }
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.activeDropdown) {
+        this.close(this.activeDropdown);
+      }
+    });
+  }
+
+  toggle(dropdown) {
+    const isOpen = dropdown.classList.contains('open');
+
+    // Close any other open dropdown
+    if (this.activeDropdown && this.activeDropdown !== dropdown) {
+      this.close(this.activeDropdown);
+    }
+
+    if (isOpen) {
+      this.close(dropdown);
+    } else {
+      this.open(dropdown);
+    }
+  }
+
+  open(dropdown) {
+    const trigger = dropdown.querySelector('.nav-dropdown__trigger');
+    dropdown.classList.add('open');
+    trigger.setAttribute('aria-expanded', 'true');
+    this.activeDropdown = dropdown;
+  }
+
+  close(dropdown) {
+    const trigger = dropdown.querySelector('.nav-dropdown__trigger');
+    dropdown.classList.remove('open');
+    trigger.setAttribute('aria-expanded', 'false');
+    if (this.activeDropdown === dropdown) {
+      this.activeDropdown = null;
+    }
+  }
+}
+
+// =============================================================================
 // Mobile Menu
 // =============================================================================
 
@@ -174,6 +267,7 @@ function renderFootnotes() {
 // Initialize on load
 window.addEventListener("load", () => {
   setTimeout(() => {
+    new NavDropdowns();
     new MobileMenu();
     renderFootnotes();
   }, 0);

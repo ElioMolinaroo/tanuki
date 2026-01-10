@@ -10,9 +10,25 @@
 {% macro nav_links(nav, current_path="") %}
 {% if nav %}
 {% for link in nav %}
-<a href="{{ link.url | safe }}" class="header__link {% if current_path == link.url %}active{% endif %}">
-    {{ link.name }}
-</a>
+    {% if link.children %}
+    <div class="nav-dropdown">
+        <button class="nav-dropdown__trigger" type="button" aria-expanded="false" aria-haspopup="true">
+            {{ link.name }}
+            <svg class="nav-dropdown__chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="nav-dropdown__menu" role="menu">
+            {% for child in link.children %}
+            <a href="{{ child.url | safe }}" role="menuitem"{% if child.external %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                {{ child.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <a href="{{ link.url | safe }}" class="header__link {% if current_path == link.url %}active{% endif %}"{% if link.external %} target="_blank" rel="noopener noreferrer"{% endif %}>
+        {{ link.name }}
+    </a>
+    {% endif %}
 {% endfor %}
 {% endif %}
 {% endmacro %}

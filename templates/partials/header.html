@@ -21,7 +21,31 @@
                     {% endfor %}
                 {% elif config.extra.nav_links %}
                     {% for link in config.extra.nav_links %}
-                    <a href="{{ link.url | safe }}">{{ link.name }}</a>
+                        {% if link.children %}
+                        <div class="nav-dropdown">
+                            <button class="nav-dropdown__trigger" type="button" aria-expanded="false" aria-haspopup="true">
+                                {{ link.name }}
+                                <svg class="nav-dropdown__chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div class="nav-dropdown__menu" role="menu">
+                                {% for child in link.children %}
+                                <a href="{{ child.url | safe }}" role="menuitem"{% if child.external %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                                    {{ child.name }}
+                                    {% if child.external %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                                    {% endif %}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <a href="{{ link.url | safe }}"{% if link.external %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                            {{ link.name }}
+                            {% if link.external %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                            {% endif %}
+                        </a>
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
                 {% if config.build_search_index %}
@@ -86,7 +110,26 @@
             {% endfor %}
         {% elif config.extra.nav_links %}
             {% for link in config.extra.nav_links %}
-            <a href="{{ link.url | safe }}">{{ link.name }}</a>
+                {% if link.children %}
+                <div class="mobile-nav-group">
+                    <span class="mobile-nav-group__label">{{ link.name }}</span>
+                    {% for child in link.children %}
+                    <a href="{{ child.url | safe }}"{% if child.external %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                        {{ child.name }}
+                        {% if child.external %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <a href="{{ link.url | safe }}"{% if link.external %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                    {{ link.name }}
+                    {% if link.external %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                    {% endif %}
+                </a>
+                {% endif %}
             {% endfor %}
         {% endif %}
         {% if config.build_search_index %}
@@ -251,9 +294,25 @@
             {% endfor %}
         {% elif config.extra.nav_links %}
             {% for link in config.extra.nav_links %}
-            <a href="{{ link.url | safe }}" class="header__link {% if current_path is defined and current_path == link.url %}active{% endif %}">
-                {{ link.name }}
-            </a>
+                {% if link.children %}
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown__trigger header__link" type="button" aria-expanded="false" aria-haspopup="true">
+                        {{ link.name }}
+                        <svg class="nav-dropdown__chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="nav-dropdown__menu" role="menu">
+                        {% for child in link.children %}
+                        <a href="{{ child.url | safe }}" role="menuitem"{% if child.external %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                            {{ child.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <a href="{{ link.url | safe }}" class="header__link {% if current_path is defined and current_path == link.url %}active{% endif %}"{% if link.external %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                    {{ link.name }}
+                </a>
+                {% endif %}
             {% endfor %}
         {% endif %}
     </nav>

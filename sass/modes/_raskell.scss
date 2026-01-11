@@ -424,10 +424,12 @@
                 transform: translateX(-50%) translateY(4px);
                 min-width: 200px;
                 padding: 8px;
-                background: var(--background);
+                background: color-mix(in srgb, var(--background) 70%, transparent);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
                 border: 1px solid var(--light-background);
                 border-radius: 12px;
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
                 opacity: 0;
                 visibility: hidden;
                 transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;

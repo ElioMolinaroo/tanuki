@@ -89,6 +89,32 @@
     document.body.style.overflow = '';
   }
 
+  function getCurrentVersionPrefix() {
+    const path = window.location.pathname;
+    const versionMatch = path.match(/^(\/docs)?\/v\/([^/]+)\//);
+    if (versionMatch) {
+      return `/v/${versionMatch[2]}/`;
+    }
+    return null;
+  }
+
+  function filterResultsByVersion(results) {
+    const versionPrefix = getCurrentVersionPrefix();
+
+    return results.filter(result => {
+      const doc = searchIndex.documentStore.getDoc(result.ref);
+      const docPath = new URL(doc.id, window.location.origin).pathname;
+
+      if (versionPrefix) {
+        // Viewing versioned docs: only show results from this version
+        return docPath.includes(versionPrefix);
+      } else {
+        // Viewing latest docs: exclude all versioned paths
+        return !docPath.match(/\/v\/[^/]+\//);
+      }
+    });
+  }
+
   function performSearch() {
     const query = searchInput.value.trim();
 
@@ -97,13 +123,15 @@
       return;
     }
 
-    const results = searchIndex.search(query, {
+    const allResults = searchIndex.search(query, {
       fields: {
         title: { boost: 2 },
         body: { boost: 1 }
       },
       expand: true
     });
+
+    const results = filterResultsByVersion(allResults);
 
     if (results.length === 0) {
       searchResults.innerHTML = `

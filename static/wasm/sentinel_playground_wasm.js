@@ -227,6 +227,60 @@ export function simulate_stateful(config_kdl, requests_json) {
 }
 
 /**
+ * Simulate a request with mock agent responses
+ *
+ * This enables simulation of agent decisions (WAF, auth, custom agents)
+ * and shows how they affect the request pipeline.
+ *
+ * Takes:
+ * - `config_kdl`: KDL configuration string
+ * - `request_json`: JSON string representing the request
+ * - `agent_responses_json`: JSON array of mock agent responses
+ *
+ * Mock agent response format:
+ * ```json
+ * [
+ *     {
+ *         "agent_id": "waf",
+ *         "decision": { "type": "block", "status": 403, "body": "Blocked" },
+ *         "request_headers": [{ "op": "set", "name": "X-WAF", "value": "checked" }],
+ *         "response_headers": [],
+ *         "audit": { "rule_ids": ["942100"], "tags": ["sql-injection"] }
+ *     }
+ * ]
+ * ```
+ *
+ * Decision types:
+ * - `{ "type": "allow" }` - Allow the request
+ * - `{ "type": "block", "status": 403, "body": "..." }` - Block with response
+ * - `{ "type": "redirect", "url": "...", "status": 302 }` - Redirect
+ * - `{ "type": "challenge", "challenge_type": "captcha", "params": {} }` - Challenge
+ *
+ * Returns a JSON object with:
+ * - `matched_route`: The matched route
+ * - `agent_chain`: Step-by-step trace of agent execution
+ * - `final_decision`: Combined decision ("allow", "block", "redirect", "challenge")
+ * - `final_request`: Request after all header mutations
+ * - `block_response`: Block details (if blocked)
+ * - `redirect_url`: Redirect URL (if redirecting)
+ * - `audit_trail`: Combined audit info from all agents
+ * @param {string} config_kdl
+ * @param {string} request_json
+ * @param {string} agent_responses_json
+ * @returns {any}
+ */
+export function simulate_with_agents(config_kdl, request_json, agent_responses_json) {
+    const ptr0 = passStringToWasm0(config_kdl, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passStringToWasm0(request_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ptr2 = passStringToWasm0(agent_responses_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len2 = WASM_VECTOR_LEN;
+    const ret = wasm.simulate_with_agents(ptr0, len0, ptr1, len1, ptr2, len2);
+    return ret;
+}
+
+/**
  * Validate a KDL configuration string
  *
  * Returns a JSON object with the following structure:

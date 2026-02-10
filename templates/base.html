@@ -406,6 +406,7 @@
     {# Scripts #}
     {% if mode == "site" or mode == "blog" %}
     {# raskell.io style scripts for site/blog mode #}
+    <script src="{{ get_url(path='js/theme.js') | safe }}"></script>
     <script src="{{ get_url(path='js/anchors.js') | safe }}"></script>
     <script src="{{ get_url(path='js/scroll-to-top.js') | safe }}"></script>
 
